@@ -16,6 +16,7 @@ namespace QuantumAlgorithms.DataService
             FirstOrDefault(run => run.Id == id);
         public override IQueryable<IntegerFactorization> GetMany() => Context.IntegerFactorizationRuns.Include(run => run.Messages);
         public override IQueryable<IntegerFactorization> GetManyFilter(Guid[] ids) => Context.IntegerFactorizationRuns.
-            FromSql($"SELECT * FROM IntegerFactorizationRuns WHERE {CombineFilter(ids)}".ToString());
+            FromSql($"SELECT * FROM QuantumAlgorithm WHERE Discriminator = 'IntegerFactorization' AND ({CombineFilter(ids)})".ToString()).
+            Include(run => run.Messages);
     }
 }

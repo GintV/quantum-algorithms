@@ -6,27 +6,25 @@ using QuantumAlgorithms.Jobs;
 
 namespace QuantumAlgorithms.JobsService
 {
-    public class IntegerFactorizationJobService : JobService<IntegerFactorization>
+    public class DiscreteLogarithmJobService : JobService<DiscreteLogarithm>
     {
-        private readonly IDataService<IntegerFactorization, Guid> _integerFactorizationDataService;
+        private readonly IDataService<DiscreteLogarithm, Guid> _discreteLogarithmDataService;
 
-        public IntegerFactorizationJobService(IDataService<ExecutionMessage, Guid> executionMessageDataService,
-            IDataService<IntegerFactorization, Guid> integerFactorizationDataService, IExecutionLogger logger) : base(
-            executionMessageDataService, logger)
+        public DiscreteLogarithmJobService(IDataService<ExecutionMessage, Guid> executionMessageDataService,
+            IDataService<DiscreteLogarithm, Guid> discreteLogarithmDataService, IExecutionLogger logger) : base(executionMessageDataService, logger)
         {
-            _integerFactorizationDataService = integerFactorizationDataService;
+            _discreteLogarithmDataService = discreteLogarithmDataService;
         }
 
-        public override void Execute(IntegerFactorization entity)
+        public override void Execute(DiscreteLogarithm entity)
         {
             Logger.SetExecutionId(entity.Id);
-            var job = new IntegerFactorizationJob(Logger);
-            var result = job.Run(entity.Number);
+            var job = new DiscreteLogarithmJob(Logger);
+            var result = job.Run(entity.Generator, entity.Result, entity.Modulus);
 
             if (result.IsSuccess)
             {
-                entity.FactorP = result.Factors.P;
-                entity.FactorQ = result.Factors.Q;
+                entity.Exponent = result.DiscreteLogarithm;
                 entity.Status = result.HadWarnings ? Status.FinishedWithWarnings : Status.Finished;
             }
             else
@@ -34,8 +32,8 @@ namespace QuantumAlgorithms.JobsService
                 entity.Status = Status.FinishedWithErrors;
             }
 
-            _integerFactorizationDataService.Update(entity);
-            _integerFactorizationDataService.SaveChanges();
+            _discreteLogarithmDataService.Update(entity);
+            _discreteLogarithmDataService.SaveChanges();
         }
     }
 }

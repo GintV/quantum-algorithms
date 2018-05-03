@@ -19,7 +19,7 @@ namespace QuantumAlgorithms.DataService
         bool Exists(TIdentifier id);
         TEntity Get(TIdentifier id);
         IQueryable<TEntity> GetMany();
-        IQueryable<TEntity> GetManyFilter(TIdentifier[] ids);
+        IQueryable<TEntity> GetManyFilter(Guid[] ids);
         int SaveChanges();
         EntityEntry Update(TEntity instance);
         void UpdateMany(TEntity[] instances);
@@ -47,7 +47,7 @@ namespace QuantumAlgorithms.DataService
 
         public abstract TEntity Get(TIdentifier id);
         public abstract IQueryable<TEntity> GetMany();
-        public abstract IQueryable<TEntity> GetManyFilter(TIdentifier[] ids);
+        public abstract IQueryable<TEntity> GetManyFilter(Guid[] ids);
 
         protected string CombineFilter(TIdentifier[] ids)
         {

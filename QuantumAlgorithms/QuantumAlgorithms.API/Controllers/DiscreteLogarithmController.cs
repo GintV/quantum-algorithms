@@ -48,9 +48,10 @@ namespace QuantumAlgorithms.API.Controllers
         [HttpGet(BasePathId, Name = GetResourceRouteName)]
         public IActionResult GetResource(Guid id) => base.GetResource<DiscreteLogarithmGetDto>(id);
 
-        //[HttpGet(BasePath), EnableCors("AllowMyClient")]
-        //public IActionResult GetResources(BaseResourceParameters baseResourceParameters, FilterByIdsParameters<Guid> filterByIdsParameters) =>
-        //    base.GetResources<IntegerFactorizationGetDto>(baseResourceParameters, filterByIdsParameters);
+        [HttpGet(BasePath), EnableCors("AllowMyClient")]
+        public IActionResult GetResources(BaseResourceParameters baseResourceParameters, FilterByIdsParameters<Guid> filterByIdsParameters) =>
+            (filterByIdsParameters?.GetIds()).Any() ? base.GetResources<DiscreteLogarithmGetDto>(baseResourceParameters, filterByIdsParameters) :
+            Ok(Array.Empty<DiscreteLogarithmGetDto>());
 
         //[HttpPut(BasePathId)]
         //public IActionResult UpdateResource(Guid id, [FromBody] PlayerUpdateDto updateDto) =>

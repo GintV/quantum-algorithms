@@ -21,8 +21,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "QuantumAlgorithms.DriversSe
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "QuantumAlgorithms.Jobs", "QuantumAlgorithms.Jobs\QuantumAlgorithms.Jobs.csproj", "{5D67C27E-F7DD-48F1-9F9B-222D2E3638DD}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QuantumAlgorithms.Client", "QuantumAlgorithms.Client\QuantumAlgorithms.Client.csproj", "{B3589442-D927-41EA-9975-9615C8D27840}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -65,10 +63,6 @@ Global
 		{5D67C27E-F7DD-48F1-9F9B-222D2E3638DD}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5D67C27E-F7DD-48F1-9F9B-222D2E3638DD}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5D67C27E-F7DD-48F1-9F9B-222D2E3638DD}.Release|Any CPU.Build.0 = Release|Any CPU
-		{B3589442-D927-41EA-9975-9615C8D27840}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{B3589442-D927-41EA-9975-9615C8D27840}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{B3589442-D927-41EA-9975-9615C8D27840}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{B3589442-D927-41EA-9975-9615C8D27840}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

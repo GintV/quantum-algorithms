@@ -13,8 +13,8 @@ namespace QuantumAlgorithms.API.Extensions
 
         public static IQueryable<TEntity> GetManyFilter<TEntity, TIdentifier>(this IDataService<TEntity, TIdentifier> dataService,
             BaseResourceParameters baseResourceParameters, FilterByIdsParameters<TIdentifier> filterByIdsParameters)
-            where TEntity : class, IEntity => filterByIdsParameters?.Ids?.Length != 0 ? 
-            dataService.GetManyFilter(filterByIdsParameters.Ids).ApplyPaging(baseResourceParameters) :
+            where TEntity : class, IEntity => (filterByIdsParameters?.GetIds()).Any() ? 
+            dataService.GetManyFilter(filterByIdsParameters.GetIds().ToArray()).ApplyPaging(baseResourceParameters) :
             dataService.GetMany(baseResourceParameters);
 
         private static IQueryable<TEntity> ApplyPaging<TEntity>(this IQueryable<TEntity> source, BaseResourceParameters baseResourceParameters) =>
