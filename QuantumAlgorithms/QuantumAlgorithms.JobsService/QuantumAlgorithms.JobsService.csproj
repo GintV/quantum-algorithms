@@ -1,0 +1,15 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>netcoreapp2.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\QuantumAlgorithms.Common\QuantumAlgorithms.Common.csproj" />
+    <ProjectReference Include="..\QuantumAlgorithms.DataService\QuantumAlgorithms.DataService.csproj" />
+    <ProjectReference Include="..\QuantumAlgorithms.Domain\QuantumAlgorithms.Domain.csproj" />
+    <ProjectReference Include="..\QuantumAlgorithms.Jobs\QuantumAlgorithms.Jobs.csproj" />
+  </ItemGroup>
+
+</Project>

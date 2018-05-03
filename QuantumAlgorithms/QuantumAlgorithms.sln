@@ -1,0 +1,79 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.27130.2010
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "QuantumAlgorithms.Drivers", "QuantumAlgorithms.Drivers\QuantumAlgorithms.Drivers.csproj", "{9B8CF096-4812-4521-A852-A8A5AE272ED2}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "QuantumAlgorithms.API", "QuantumAlgorithms.API\QuantumAlgorithms.API.csproj", "{5D8DF725-3935-4E08-A686-F6A376C4E1D4}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "QuantumAlgorithms.Domain", "QuantumAlgorithms.Domain\QuantumAlgorithms.Domain.csproj", "{62029851-259D-4A2E-A85D-F3B777D4B332}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "QuantumAlgorithms.DataService", "QuantumAlgorithms.DataService\QuantumAlgorithms.DataService.csproj", "{0C745022-8D75-4C6B-98B7-88CC0C854A09}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "QuantumAlgorithms.Data", "QuantumAlgorithms.Data\QuantumAlgorithms.Data.csproj", "{32410653-B3D3-4D83-8607-739A65527028}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "QuantumAlgorithms.Common", "QuantumAlgorithms.Common\QuantumAlgorithms.Common.csproj", "{0F95E08B-04DE-4BFF-883F-5A2CECA339EA}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "QuantumAlgorithms.JobsService", "QuantumAlgorithms.JobsService\QuantumAlgorithms.JobsService.csproj", "{1545E5BF-37ED-43DD-8081-7683358DAFF4}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "QuantumAlgorithms.DriversService", "QuantumAlgorithms.DriversService\QuantumAlgorithms.DriversService.csproj", "{BD72CE9E-5D5F-44D5-9899-3E479A71C4B0}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "QuantumAlgorithms.Jobs", "QuantumAlgorithms.Jobs\QuantumAlgorithms.Jobs.csproj", "{5D67C27E-F7DD-48F1-9F9B-222D2E3638DD}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QuantumAlgorithms.Client", "QuantumAlgorithms.Client\QuantumAlgorithms.Client.csproj", "{B3589442-D927-41EA-9975-9615C8D27840}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{9B8CF096-4812-4521-A852-A8A5AE272ED2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9B8CF096-4812-4521-A852-A8A5AE272ED2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9B8CF096-4812-4521-A852-A8A5AE272ED2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9B8CF096-4812-4521-A852-A8A5AE272ED2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5D8DF725-3935-4E08-A686-F6A376C4E1D4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5D8DF725-3935-4E08-A686-F6A376C4E1D4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5D8DF725-3935-4E08-A686-F6A376C4E1D4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5D8DF725-3935-4E08-A686-F6A376C4E1D4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{62029851-259D-4A2E-A85D-F3B777D4B332}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{62029851-259D-4A2E-A85D-F3B777D4B332}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{62029851-259D-4A2E-A85D-F3B777D4B332}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{62029851-259D-4A2E-A85D-F3B777D4B332}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0C745022-8D75-4C6B-98B7-88CC0C854A09}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0C745022-8D75-4C6B-98B7-88CC0C854A09}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0C745022-8D75-4C6B-98B7-88CC0C854A09}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0C745022-8D75-4C6B-98B7-88CC0C854A09}.Release|Any CPU.Build.0 = Release|Any CPU
+		{32410653-B3D3-4D83-8607-739A65527028}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{32410653-B3D3-4D83-8607-739A65527028}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{32410653-B3D3-4D83-8607-739A65527028}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{32410653-B3D3-4D83-8607-739A65527028}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0F95E08B-04DE-4BFF-883F-5A2CECA339EA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0F95E08B-04DE-4BFF-883F-5A2CECA339EA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0F95E08B-04DE-4BFF-883F-5A2CECA339EA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0F95E08B-04DE-4BFF-883F-5A2CECA339EA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1545E5BF-37ED-43DD-8081-7683358DAFF4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1545E5BF-37ED-43DD-8081-7683358DAFF4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1545E5BF-37ED-43DD-8081-7683358DAFF4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1545E5BF-37ED-43DD-8081-7683358DAFF4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BD72CE9E-5D5F-44D5-9899-3E479A71C4B0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BD72CE9E-5D5F-44D5-9899-3E479A71C4B0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BD72CE9E-5D5F-44D5-9899-3E479A71C4B0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BD72CE9E-5D5F-44D5-9899-3E479A71C4B0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5D67C27E-F7DD-48F1-9F9B-222D2E3638DD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5D67C27E-F7DD-48F1-9F9B-222D2E3638DD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5D67C27E-F7DD-48F1-9F9B-222D2E3638DD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5D67C27E-F7DD-48F1-9F9B-222D2E3638DD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B3589442-D927-41EA-9975-9615C8D27840}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B3589442-D927-41EA-9975-9615C8D27840}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B3589442-D927-41EA-9975-9615C8D27840}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B3589442-D927-41EA-9975-9615C8D27840}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {1D242ABA-D160-49E5-8A90-2A6BC36945CF}
+	EndGlobalSection
+EndGlobal
