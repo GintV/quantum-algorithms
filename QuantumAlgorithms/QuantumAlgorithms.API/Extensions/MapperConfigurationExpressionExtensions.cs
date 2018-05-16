@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
-using QuantumAlgorithms.API.Models.Create;
-using QuantumAlgorithms.API.Models.Get;
+using QuantumAlgorithms.Models.Create;
+using QuantumAlgorithms.Models.Get;
 using QuantumAlgorithms.Domain;
 
 namespace QuantumAlgorithms.API.Extensions

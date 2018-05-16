@@ -6,6 +6,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Hangfire" Version="1.6.19" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\QuantumAlgorithms.Common\QuantumAlgorithms.Common.csproj" />
     <ProjectReference Include="..\QuantumAlgorithms.DataService\QuantumAlgorithms.DataService.csproj" />
     <ProjectReference Include="..\QuantumAlgorithms.Domain\QuantumAlgorithms.Domain.csproj" />

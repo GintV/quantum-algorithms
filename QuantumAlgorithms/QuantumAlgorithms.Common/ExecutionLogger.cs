@@ -12,10 +12,10 @@ namespace QuantumAlgorithms.Common
 
     public class ExecutionLogger : IExecutionLogger
     {
-        private readonly IDataService<ExecutionMessage, Guid> _dataService;
+        private readonly IDataService<ExecutionMessage> _dataService;
         private Guid _executionId;
 
-        public ExecutionLogger(IDataService<ExecutionMessage, Guid> dataService)
+        public ExecutionLogger(IDataService<ExecutionMessage> dataService)
         {
             _dataService = dataService;
         }

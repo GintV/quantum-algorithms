@@ -6,36 +6,49 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using QuantumAlgorithms.DataService;
 using QuantumAlgorithms.Domain;
-using AutoMapper;
 using Hangfire;
-using QuantumAlgorithms.API.Models.Update;
+using IdentityModel;
+using QuantumAlgorithms.Models.Update;
 using static QuantumAlgorithms.API.Constants;
-using QuantumAlgorithms.API.Models.Create;
-using QuantumAlgorithms.API.Models.Get;
+using QuantumAlgorithms.Models.Create;
+using QuantumAlgorithms.Models.Get;
 using QuantumAlgorithms.API.QueryingParameters;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Cors;
 using QuantumAlgorithms.API.Extensions;
 using QuantumAlgorithms.Common;
+using static AutoMapper.Mapper;
+using static QuantumAlgorithms.Models.Error.NotFoundDto;
 
 
 namespace QuantumAlgorithms.API.Controllers
 {
-    public class DiscreteLogarithmController : BaseController<DiscreteLogarithm, Guid>
+    [Authorize]
+    public class DiscreteLogarithmController : BaseController<DiscreteLogarithm>
     {
         private const string BasePath = ApiBasePath + PathSep + nameof(DiscreteLogarithm);
         private const string BasePathId = BasePath + PathSep + Id;
         private const string GetResourceRouteName = "Get" + nameof(DiscreteLogarithm);
 
-        public DiscreteLogarithmController(IDataService<DiscreteLogarithm, Guid> discreteLogarithmDataService) :
+        public DiscreteLogarithmController(IDataService<DiscreteLogarithm> discreteLogarithmDataService) :
             base(discreteLogarithmDataService, GetResourceRouteName)
         { }
 
+        [AllowAnonymous]
         [HttpPost(BasePath)]
         public IActionResult CreateResource([FromBody] DiscreteLogarithmCreateDto createDto)
         {
             var result = base.CreateResource<DiscreteLogarithmCreateDto, DiscreteLogarithmGetDto>(createDto);
-            CreatedResource?.StartJobService();
+            if (CreatedResource == null)
+                return result;
+
+            if (User.Identity.IsAuthenticated)
+                CreatedResource.SubscriberId = User.Claims.First(claim => claim.Type == JwtClaimTypes.Subject).Value;
+
+            CreatedResource.JobId = CreatedResource.StartJobService();
+            ResourceDataService.Update(CreatedResource);
+            ResourceDataService.SaveChanges();
+
             return result;
         }
 
@@ -43,15 +56,36 @@ namespace QuantumAlgorithms.API.Controllers
         public new IActionResult CreateResource(Guid id) => base.CreateResource(id);
 
         [HttpDelete(BasePathId)]
-        public new IActionResult DeleteResource(Guid id) => base.DeleteResource(id);
+        public new IActionResult DeleteResource(Guid id)
+        {
+            var resource = ResourceDataService.Get(id);
+            if (resource == null || resource.SubscriberId != User.Claims.First(claim => claim.Type == JwtClaimTypes.Subject).Value)
+                return NotFound(ResourceNotFound(id.ToString()));
+            ResourceDataService.Delete(resource);
+            ResourceDataService.SaveChanges();
+            return NoContent();
+        }
 
+        [AllowAnonymous]
         [HttpGet(BasePathId, Name = GetResourceRouteName)]
-        public IActionResult GetResource(Guid id) => base.GetResource<DiscreteLogarithmGetDto>(id);
+        public IActionResult GetResource(Guid id)
+        {
+            var resource = ResourceDataService.Get(id);
+            if (resource == null || resource.SubscriberId != null && resource.SubscriberId != User?.Claims?.FirstOrDefault(claim => claim.Type == JwtClaimTypes.Subject)?.Value)
+                return NotFound(ResourceNotFound(id.ToString()));
+            return Ok(Map<DiscreteLogarithmGetDto>(resource));
+        }
 
-        [HttpGet(BasePath), EnableCors("AllowMyClient")]
-        public IActionResult GetResources(BaseResourceParameters baseResourceParameters, FilterByIdsParameters<Guid> filterByIdsParameters) =>
-            (filterByIdsParameters?.GetIds()).Any() ? base.GetResources<DiscreteLogarithmGetDto>(baseResourceParameters, filterByIdsParameters) :
-            Ok(Array.Empty<DiscreteLogarithmGetDto>());
+        [HttpGet(BasePath)]
+        public IActionResult GetResources(BaseResourceParameters baseResourceParameters, FilterByIdsParameter filterByIdsParameter,
+            FilterByStatusesParameter filterByStatusesParameter) =>
+            Ok(Map<IEnumerable<DiscreteLogarithmGetDto>>(ResourceDataService.GetManyFilter(baseResourceParameters, filterByIdsParameter,
+                filterByStatusesParameter, User.Claims.First(claim => claim.Type == JwtClaimTypes.Subject).Value)));
+
+        //[HttpGet(BasePath)]
+        //public IActionResult GetResources(BaseResourceParameters baseResourceParameters, FilterByIdsParameter<Guid> filterByIdsParameter) =>
+        //    (filterByIdsParameter?.GetIds()).Any() ? base.GetResources<DiscreteLogarithmGetDto>(baseResourceParameters, filterByIdsParameter) :
+        //    Ok(Array.Empty<DiscreteLogarithmGetDto>());
 
         //[HttpPut(BasePathId)]
         //public IActionResult UpdateResource(Guid id, [FromBody] PlayerUpdateDto updateDto) =>

@@ -1,4 +1,5 @@
 ﻿using System;
+using Hangfire;
 using QuantumAlgorithms.Common;
 using QuantumAlgorithms.Drivers.PeriodEstimation;
 

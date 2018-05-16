@@ -5,6 +5,8 @@ using System.Diagnostics;
 using System.Threading;
 using Hangfire;
 using Hangfire.States;
+using QuantumAlgorithms.DataService;
+using QuantumAlgorithms.Domain;
 using static QuantumAlgorithms.Jobs.Constants;
 using Random = System.Random;
 using QuantumAlgorithms.Drivers.PeriodEstimation;
@@ -18,11 +20,13 @@ namespace QuantumAlgorithms.Jobs
         private static readonly object Lock = new object();
 
         private IExecutionLogger _logger;
+        private readonly IDataService<IntegerFactorization> _dataService;
         private bool _hadWarnings;
 
-        public IntegerFactorizationJob(IExecutionLogger logger)
+        public IntegerFactorizationJob(IExecutionLogger logger, IDataService<IntegerFactorization> dataService)
         {
             _logger = logger;
+            _dataService = dataService;
             _hadWarnings = false;
         }
 
@@ -47,7 +51,7 @@ namespace QuantumAlgorithms.Jobs
             var retryCount = 0;
             for (; retryCount < 3; ++retryCount)
             {
-                Log.Info($"Trying to pick a co-prime to provided number in the interval [2; number - 1] ([2, {number - 1}]).");
+                Log.Info($"Trying to pick a co-prime to provided number in the interval [2; number - 1] | [2, {number - 1}].");
                 if (!TryPickCoprime(number, out int coprime, out int divisor))
                 {
                     Log.Info("Found divisor by accident.");
@@ -55,12 +59,12 @@ namespace QuantumAlgorithms.Jobs
                     return SuccessResult((number / divisor, divisor));
                 }
 
-                Log.Info($"No common divisors found. Enqueuing period estimation of univariate function (x) => a^x (mod N) " +
-                    $"((x) => {coprime}^x (mod {number})).");
+                Log.Info($"No common divisors found. Enqueuing period estimation of univariate function (x) => a^(x) mod N " +
+                    $"| (x) => {coprime}^(x) (mod {number}).");
                 if (!TryEstimatePeriod(coprime, number, out var period))
                     break;
 
-                Log.Info($"Estimated period: {period}");
+                Log.Info($"Estimated period: {period}.");
                 if (period % 2 != 0)
                 {
                     _hadWarnings = true;
@@ -68,7 +72,7 @@ namespace QuantumAlgorithms.Jobs
                     continue;
                 }
 
-                Log.Info($"Checking equality (a^(r/2) + 1) mod N = 0 (({coprime}^{period / 2} + 1) mod {number} = 0).");
+                Log.Info($"Checking equality (a^(r/2) + 1) mod N = 0 | ({coprime}^({period / 2}) + 1) mod {number} = 0.");
                 var halfPower = Utilities.CalculateExpMod(coprime, period / 2, number);
 
                 if (halfPower == number - 1)
@@ -78,12 +82,12 @@ namespace QuantumAlgorithms.Jobs
                     continue;
                 }
                 Log.Info($"Equality is incorrect, thus p*q = N, where p = GCD(a^(r/2) - 1, N) and q = GCD(a^(r/2) + 1, N) " +
-                    $"(p = GCD({coprime}^{period / 2} - 1, {number}) and q = GCD({coprime}^{period / 2} + 1, {number})).");
+                    $"| p = GCD({coprime}^({period / 2}) - 1, {number}) and q = GCD({coprime}^({period / 2}) + 1, {number}).");
 
                 var p = Utilities.GCD(halfPower - 1, number);
                 var q = Utilities.GCD(halfPower + 1, number);
 
-                Log.Info($"Factors are: {p} and {q}");
+                Log.Info($"Factors are: {p} and {q}.");
                 return _hadWarnings ? WarningResult((p, q)) : SuccessResult((p, q));
             }
 
@@ -136,13 +140,18 @@ namespace QuantumAlgorithms.Jobs
                             Modulus = number
                         }));
 
+                    var entity = _dataService.Get(_logger.GetExecutionId());
+                    entity.InnerJobId = jobId;
+                    _dataService.Update(entity);
+                    _dataService.SaveChanges();
+
                     period = WaitPeriodEstimation(jobId);
                 }
             }
             catch (TimeoutException e)
             {
-                Log.Warning($"Period estimation failed. {e.Message}");
-                period = 0;
+                Log.Error($"Period estimation failed. {e.Message} Aborting execution.");
+                period = -1;
             }
             catch (Exception e) when (e is KeyNotFoundException || e is FormatException)
             {

@@ -8,10 +8,10 @@ namespace QuantumAlgorithms.API
     public class Constants
     {
         public const string ApiBasePath = "Api";
-        public const string ApiVerionString = "v1.0";
+        public const string ApiVersionString = "v1.0";
         public const string Id = "{id}";
         public const string PathSep = "/";
         public const string ParentId = "{parentId}";
-        public static string SwaggerEndpoint = $"/swagger/{ApiVerionString}/swagger.json";
+        public static string SwaggerEndpoint = $"/swagger/{ApiVersionString}/swagger.json";
     }
 }

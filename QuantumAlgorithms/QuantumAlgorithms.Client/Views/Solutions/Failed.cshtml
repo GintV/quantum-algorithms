@@ -1,0 +1,79 @@
+﻿@using QuantumAlgorithms.Client.ViewModels.Solve
+@using QuantumAlgorithms.Domain
+@model string
+@{
+    ViewData["Title"] = "Solutions - Failed";
+}
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-3">
+            <div>
+                <br />
+            </div>
+            <div>
+                <br />
+            </div>
+            <div class="list-group">
+                <a href="/Solutions/Enqueued" class="list-group-item ">
+                    Enqueued
+                </a>
+                <a href="/Solutions/Processing" class="list-group-item ">
+                    Processing
+                </a>
+                <a href="/Solutions/Succeeded" class="list-group-item">
+                    Succeeded
+                </a>
+                <a href="/Solutions/Failed" class="list-group-item active">
+                    Failed
+                </a>
+                <a href="/Solutions/Canceled" class="list-group-item ">
+                    Canceled
+                </a>
+            </div>
+        </div>
+
+        <div class="col-md-9">
+            <h2>Failed</h2>
+
+            <table class="table table-hover" style="table-layout: fixed">
+                <thead>
+                    <tr style="line-height: 40px; min-height: 40px; height: 40px;">
+                        <th colspan="1">No</th>
+                        <th colspan="4">Solution</th>
+                        <th colspan="4">Start Time</th>
+                        <th colspan="2">Duration</th>
+                        <th colspan="1"><span class="glyphicon glyphicon-info-sign"></span></th>
+                    </tr>
+                </thead>
+                <tbody id="statsBody"></tbody>
+            </table>
+            
+                    
+            
+            <nav aria-label="Page navigation">
+                <ul class="pagination">
+                    <li class="page-item" id="prev" onclick="getPrev()" style="display:none;"><a href="#">Previous</a></li>
+                    <li class="page-item" id="next" onclick="getNext()" style="display:none;"><a href="#">Next</a></li>
+                    <li class="page-item" id="spinner" style="display:none;"><i class="fa fa-spinner fa-spin" style="font-size: 36px;"></i></li>
+                </ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+<script>
+    window.onload = function () {
+        getSolutions("@Model", 4, true);
+    };
+
+    function getNext() {
+        page = page + 1;
+        getSolutions("@Model", 4, true);
+    }
+
+    function getPrev() {
+        page = page - 1;
+        getSolutions("@Model", 4, true);
+    }
+</script>

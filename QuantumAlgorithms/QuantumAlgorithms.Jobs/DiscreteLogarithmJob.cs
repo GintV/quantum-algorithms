@@ -5,6 +5,8 @@ using System.Diagnostics;
 using System.Threading;
 using Hangfire;
 using Hangfire.States;
+using QuantumAlgorithms.DataService;
+using QuantumAlgorithms.Domain;
 using static QuantumAlgorithms.Jobs.Constants;
 using Random = System.Random;
 using QuantumAlgorithms.Drivers.PeriodEstimation;
@@ -19,11 +21,13 @@ namespace QuantumAlgorithms.Jobs
         private static readonly object Lock = new object();
 
         private IExecutionLogger _logger;
+        private readonly IDataService<DiscreteLogarithm> _dataService;
         private bool _hadWarnings;
 
-        public DiscreteLogarithmJob(IExecutionLogger logger)
+        public DiscreteLogarithmJob(IExecutionLogger logger, IDataService<DiscreteLogarithm> dataService)
         {
             _logger = logger;
+            _dataService = dataService;
             _hadWarnings = false;
         }
 
@@ -39,10 +43,16 @@ namespace QuantumAlgorithms.Jobs
         /// <returns>Factors discrete logarithm of base <paramref name="generator"/> modulus <paramref name="modulus"/>.</returns>
         public DiscreteLogarithmJobResult Run(int generator, int result, int modulus)
         {
-            Log.Info($"Calculating discrete logarithm of g^k = r (mod N) ({generator}^k = {result} (mod {modulus})).");
+            Log.Info($"Calculating discrete logarithm of g^(k) = r mod N | {generator}^(k) = {result} mod {modulus}.");
+            if (result > modulus - 1)
+            {
+                Log.Error($"Remainder {result} is impossible to get after mod {modulus} operation. Aborting execution.");
+                return FailResult();
+            }
+
             if (result == generator)
             {
-                Log.Info("Result is equal to generator, thus discrete logarithm is equal to 1.");
+                Log.Info("Remainder is equal to generator, thus discrete logarithm is equal to 1.");
                 return SuccessResult(1, _hadWarnings);
             }
 
@@ -54,14 +64,14 @@ namespace QuantumAlgorithms.Jobs
 
             if (!result.IsCoprime(modulus))
             {
-                Log.Error("Result is not a co-prime to modulus. Aborting execution.");
+                Log.Error("Remainder is not a co-prime to modulus. Aborting execution.");
                 return FailResult();
             }
 
-            Log.Info($"Estimating multiple of period of a bivariate function (a, b) => g^a * r^b (mod N) " +
-                $"((a, b) => {generator}^a * {result}^b (mod {modulus})).");
+            Log.Info($"Estimating multiple of period of a bivariate function (a, b) => g^(a) * r^(b) mod N " +
+                $"| (a, b) => {generator}^(a) * {result}^(b) (mod {modulus}).");
 
-            Log.Info($"Enqueuing period estimation of univariate function (a) => g^a mod N ((a) => {generator}^a mod {modulus}).");
+            Log.Info($"Enqueuing period estimation of univariate function (a) => g^(a) mod N | (a) => {generator}^(a) mod {modulus}.");
             if (!TryEstimatePeriod(generator, modulus, out var generatorPeriod))
                 return FailResult();
             Log.Info($"Estimated generator period: {generatorPeriod}");
@@ -72,7 +82,7 @@ namespace QuantumAlgorithms.Jobs
                 return SuccessResult(generatorPeriod, _hadWarnings);
             }
 
-            Log.Info($"Enqueuing period estimation of univariate function (b) => r^b mod N ((b) => {result}^b mod {modulus}).");
+            Log.Info($"Enqueuing period estimation of univariate function (b) => r^(b) mod N | (b) => {result}^(b) mod {modulus}.");
             if (!TryEstimatePeriod(result, modulus, out var resultPeriod))
                 return FailResult();
             Log.Info($"Estimated result period: {resultPeriod}");
@@ -109,7 +119,7 @@ namespace QuantumAlgorithms.Jobs
                 if (CalculateExpMod(generator, discreteLogarithm, modulus) == result)
                 {
                     Log.Info($"Calculated multiply: {multiply}.");
-                    Log.Info($"Using equation a + b*k = a * m ({generatorPeriod} + {resultPeriod}*k = {generatorPeriod} * {multiply}), " +
+                    Log.Info($"Using equation a + b*k = a * m | {generatorPeriod} + {resultPeriod}*k = {generatorPeriod} * {multiply}, " +
                         $"where m is calculated multiply, to determine discrete logarithm, thus it is equal to {discreteLogarithm}.");
                     return SuccessResult(discreteLogarithm, _hadWarnings);
                 }
@@ -117,9 +127,9 @@ namespace QuantumAlgorithms.Jobs
                 exponentSum += basePeriod;
             }
 
-            Log.Error($"Failed to calculate multiple ({generatorPeriod}, {resultPeriod}) of a period. Multiply is greater than {multiply} and " +
+            Log.Error($"Failed to calculate multiple ({generatorPeriod}, {resultPeriod}) multiply of a period. Multiply is greater than {multiply} and " +
                 $"thus it is inefficient to calculate discrete logarithm, or generator {generator} is not the actual generator of "+
-                $"modulus {modulus} and result {result} could actually be impossible to get.");
+                $"modulus {modulus} and remainder {result} could actually be impossible to get.");
 
             return FailResult();
         }
@@ -158,13 +168,18 @@ namespace QuantumAlgorithms.Jobs
                             Modulus = number
                         }));
 
+                    var entity = _dataService.Get(_logger.GetExecutionId());
+                    entity.InnerJobId = jobId;
+                    _dataService.Update(entity);
+                    _dataService.SaveChanges();
+
                     period = WaitPeriodEstimation(jobId);
                 }
             }
             catch (TimeoutException e)
             {
-                Log.Warning($"Period estimation failed. {e.Message}");
-                period = 0;
+                Log.Error($"Period estimation failed. {e.Message} Aborting execution.");
+                period = -1;
             }
             catch (Exception e) when (e is KeyNotFoundException || e is FormatException)
             {

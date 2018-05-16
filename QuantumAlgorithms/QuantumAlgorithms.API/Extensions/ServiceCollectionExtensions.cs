@@ -11,9 +11,9 @@ namespace QuantumAlgorithms.API.Extensions
     public static class ServiceCollectionExtensions
     {
         public static void AddDataServices(this IServiceCollection services) => services.
-            AddScoped<IDataService<DiscreteLogarithm, Guid>, DiscreteLogarithmDataService>().
-            AddScoped<IDataService<ExecutionMessage, Guid>, ExecutionMessageDataService>().
-            AddScoped<IDataService<IntegerFactorization, Guid>, IntegerFactorizationDataService>();
+            AddScoped<IDataService<DiscreteLogarithm>, DiscreteLogarithmDataService>().
+            AddScoped<IDataService<ExecutionMessage>, ExecutionMessageDataService>().
+            AddScoped<IDataService<IntegerFactorization>, IntegerFactorizationDataService>();
 
         public static void AddJobsServices(this IServiceCollection services) => services.
             AddScoped<IJobService<DiscreteLogarithm>, DiscreteLogarithmJobService>().

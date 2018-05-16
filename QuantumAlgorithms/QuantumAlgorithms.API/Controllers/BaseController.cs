@@ -1,28 +1,29 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using System;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using QuantumAlgorithms.API.Extensions;
-using QuantumAlgorithms.API.Models.Create;
-using QuantumAlgorithms.API.Models.Get;
-using QuantumAlgorithms.API.Models.Update;
+using QuantumAlgorithms.Models.Create;
+using QuantumAlgorithms.Models.Get;
+using QuantumAlgorithms.Models.Update;
 using QuantumAlgorithms.API.QueryingParameters;
 using QuantumAlgorithms.Domain;
 using static AutoMapper.Mapper;
 using QuantumAlgorithms.DataService;
-using static QuantumAlgorithms.API.Models.Error.BadRequestDto;
-using static QuantumAlgorithms.API.Models.Error.NotFoundDto;
+using static QuantumAlgorithms.Models.Error.BadRequestDto;
+using static QuantumAlgorithms.Models.Error.NotFoundDto;
 
 namespace QuantumAlgorithms.API.Controllers
 {
-    public abstract class BaseController<TEntity, TIdentifier> : Controller
+    public abstract class BaseController<TEntity> : Controller
         where TEntity : class, IEntity
     {
         private readonly string _getResourceRouteName;
 
         protected TEntity CreatedResource { get; private set; }
-        protected IDataService<TEntity, TIdentifier> ResourceDataService { get; }
+        protected IDataService<TEntity> ResourceDataService { get; }
 
-        protected BaseController(IDataService<TEntity, TIdentifier> resourceDataService, string getResourceRouteName)
+        protected BaseController(IDataService<TEntity> resourceDataService, string getResourceRouteName)
         {
             ResourceDataService = resourceDataService;
             _getResourceRouteName = getResourceRouteName;
@@ -30,7 +31,7 @@ namespace QuantumAlgorithms.API.Controllers
 
         protected IActionResult CreateResource<TCreateDto, TGetDto>(TCreateDto createDto)
             where TCreateDto : ICreateDto<TEntity>
-            where TGetDto : IGetDto<TEntity, TIdentifier>
+            where TGetDto : IGetDto<TEntity>
         {
             if (createDto == null)
                 return BadRequest(InvalidData());
@@ -47,10 +48,10 @@ namespace QuantumAlgorithms.API.Controllers
             return CreatedAtRoute(_getResourceRouteName, new { id = resourceToReturn.Id }, resourceToReturn);
         }
 
-        protected IActionResult CreateResource(TIdentifier id) => ResourceDataService.Get(id) == null ?
+        protected IActionResult CreateResource(Guid id) => ResourceDataService.Get(id) == null ?
             NotFound() : new StatusCodeResult(StatusCodes.Status409Conflict);
 
-        protected IActionResult DeleteResource(TIdentifier id)
+        protected IActionResult DeleteResource(Guid id)
         {
             var resource = ResourceDataService.Get(id);
             if (resource == null)
@@ -60,8 +61,8 @@ namespace QuantumAlgorithms.API.Controllers
             return NoContent();
         }
 
-        protected IActionResult GetResource<TGetDto>(TIdentifier id)
-            where TGetDto : IGetDto<TEntity, TIdentifier>
+        protected IActionResult GetResource<TGetDto>(Guid id)
+            where TGetDto : IGetDto<TEntity>
         {
             var resource = ResourceDataService.Get(id);
             if (resource == null)
@@ -69,15 +70,15 @@ namespace QuantumAlgorithms.API.Controllers
             return Ok(Map<TGetDto>(resource));
         }
 
-        protected IActionResult GetResources<TGetDto>(BaseResourceParameters baseResourceParameters,
-            FilterByIdsParameters<TIdentifier> filterByIdsParameters) where TGetDto : IGetDto<TEntity, TIdentifier>
-        {
-            return Ok(Map<IEnumerable<TGetDto>>(ResourceDataService.GetManyFilter(baseResourceParameters, filterByIdsParameters)));
-        }
+        //protected IActionResult GetResources<TGetDto>(BaseResourceParameters baseResourceParameters,
+        //    FilterByIdsParameter<TIdentifier> filterByIdsParameters) where TGetDto : IGetDto<TEntity, TIdentifier>
+        //{
+        //    return Ok(Map<IEnumerable<TGetDto>>(ResourceDataService.GetManyFilter(baseResourceParameters, filterByIdsParameters)));
+        //}
 
-        protected IActionResult UpdateResource<TUpdateDto, TGetDto>(TIdentifier id, TUpdateDto updateDto)
+        protected IActionResult UpdateResource<TUpdateDto, TGetDto>(Guid id, TUpdateDto updateDto)
             where TUpdateDto : IUpdateDto<TEntity>
-            where TGetDto : IGetDto<TEntity, TIdentifier>
+            where TGetDto : IGetDto<TEntity>
         {
             var resource = ResourceDataService.Get(id);
             if (resource == null)

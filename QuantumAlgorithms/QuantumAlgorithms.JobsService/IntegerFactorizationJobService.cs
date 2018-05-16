@@ -1,4 +1,5 @@
 ﻿using System;
+using Hangfire;
 using QuantumAlgorithms.Common;
 using QuantumAlgorithms.DataService;
 using QuantumAlgorithms.Domain;
@@ -8,10 +9,10 @@ namespace QuantumAlgorithms.JobsService
 {
     public class IntegerFactorizationJobService : JobService<IntegerFactorization>
     {
-        private readonly IDataService<IntegerFactorization, Guid> _integerFactorizationDataService;
+        private readonly IDataService<IntegerFactorization> _integerFactorizationDataService;
 
-        public IntegerFactorizationJobService(IDataService<ExecutionMessage, Guid> executionMessageDataService,
-            IDataService<IntegerFactorization, Guid> integerFactorizationDataService, IExecutionLogger logger) :
+        public IntegerFactorizationJobService(IDataService<ExecutionMessage> executionMessageDataService,
+            IDataService<IntegerFactorization> integerFactorizationDataService, IExecutionLogger logger) :
             base(executionMessageDataService, logger)
         {
             _integerFactorizationDataService = integerFactorizationDataService;
@@ -20,9 +21,10 @@ namespace QuantumAlgorithms.JobsService
         public override void Execute(IntegerFactorization entity)
         {
             Logger.SetExecutionId(entity.Id);
-            var job = new IntegerFactorizationJob(Logger);
+            var job = new IntegerFactorizationJob(Logger, _integerFactorizationDataService);
             var result = job.Run(entity.Number);
 
+            entity = _integerFactorizationDataService.Get(entity.Id);
             if (result.IsSuccess)
             {
                 entity.FactorP = result.Factors.P;
@@ -33,6 +35,7 @@ namespace QuantumAlgorithms.JobsService
             {
                 entity.Status = Status.FinishedWithErrors;
             }
+            entity.FinishTime = DateTime.Now;
 
             _integerFactorizationDataService.Update(entity);
             _integerFactorizationDataService.SaveChanges();

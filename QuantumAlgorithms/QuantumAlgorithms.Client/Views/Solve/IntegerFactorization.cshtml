@@ -1,0 +1,175 @@
+﻿@using QuantumAlgorithms.Client.ViewModels.Solve
+@using QuantumAlgorithms.Domain
+@model QuantumAlgorithms.Client.ViewModels.Solve.IntegerFactorizationViewModel
+@{
+    ViewData["Title"] = "Integer Factorization";
+}
+
+
+<div class="container">
+    @if (User.Identity.IsAuthenticated)
+    {
+        <div class="col-md-3">
+            <div>
+                <br />
+            </div>
+            <div>
+                <br />
+            </div>
+            <div class="list-group">
+                <a href="/Solutions/Enqueued" class="list-group-item ">
+                    Enqueued
+                </a>
+                <a href="/Solutions/Processing" class="list-group-item ">
+                    Processing
+                </a>
+                <a href="/Solutions/Succeeded" class="list-group-item">
+                    Succeeded
+                </a>
+                <a href="/Solutions/Failed" class="list-group-item ">
+                    Failed
+                </a>
+                <a href="/Solutions/Canceled" class="list-group-item ">
+                    Canceled
+                </a>
+            </div>
+        </div>
+        @:<div class="col-md-9">
+        }
+    <h2>Integer Factorization</h2>
+
+    <div style="font-size: @(User.Identity.IsAuthenticated ? "14" : "18")px;" class="row well well-sm">
+        <div class="col-md-4" id="details">
+            <!--style="padding-right:20px; border-right: 1px solid #666;">-->
+            <h3 style="padding-bottom: 10px; border-bottom: 1px solid #666;">Details:</h3>
+            <div class="row">
+                <div class="form-group" id="statusString">
+                    <label class="col-md-5">Status:</label>
+                    @Model.StatusString
+                </div>
+            </div>
+            <div class="row">
+                <div class="form-group" id="startTime">
+                    <label class="col-md-5">Start Time:</label>
+                    @Model.StartTime
+                </div>
+            </div>
+            @if (Model?.FinishTime != null)
+            {
+                <div class="row">
+                    <div class="form-group" id="finishTime">
+                        <label class="col-md-5">Finish Time:</label>
+                        @Model.FinishTime
+                    </div>
+                </div>
+            }
+        </div>
+        <div class="col-md-4" id="input">
+            <h3 style="padding-bottom: 10px; border-bottom: 1px solid #666;">Input:</h3>
+            <div class="row">
+                <div class="form-group" id="number">
+                    <label class="col-md-5">Number:</label>
+                    @Model.Input.Number
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4" id="output">
+            <h3 style="padding-bottom: 10px; border-bottom: 1px solid #666;">Output:</h3>
+            @if (Model?.Output?.P > 0)
+            {
+                <div class="row">
+                    <div class="form-group" id="p">
+                        <label class="col-md-5">Factor (P):</label>
+                        @Model.Output.P
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="form-group" id="q">
+                        <label class="col-md-5">Factor (Q):</label>
+                        @Model.Output.Q
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+
+    <div class="alert alert-info alert-dismissible fade in" id="info-alert" hidden>
+        <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+        <strong>Information updated!</strong>
+    </div>
+    <div class="alert alert-success alert-dismissible fade in" id="success-alert" hidden>
+        <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+        <strong>Execution finished successfully!</strong> Check result above
+    </div>
+    <div class="alert alert-danger alert-dismissible fade in" id="danger-alert" hidden>
+        <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+        <strong>Execution finished with errors!</strong> See messages below for more information
+    </div>
+
+    <div class="row">
+        <h3>Execution Flow</h3>
+    </div>
+    <div id="messages">
+        @{ int count = -1; }
+        @foreach (var message in Model.Messages.Reverse())
+        {
+            count++;
+            if (message.Severity == ExecutionMessageSeverity.Info && count == 0 && (Model.Status == Status.Finished || Model.Status == Status.FinishedWithWarnings))
+            {
+                <div class="panel panel-success" id="message @count">
+                    <div class="panel-heading">@message.TimeStamp</div>
+                    <div class="panel-body">@IntegerFactorizationViewModel.ParseExecutionMessage(message.Message)</div>
+                </div>
+            }
+            else if (message.Severity == ExecutionMessageSeverity.Info)
+            {
+                <div class="panel panel-info" id="message @count">
+                    <div class="panel-heading">@message.TimeStamp</div>
+                    <div class="panel-body">@IntegerFactorizationViewModel.ParseExecutionMessage(message.Message)</div>
+                </div>
+            }
+            else if (message.Severity == ExecutionMessageSeverity.Warning)
+            {
+                <div class="panel panel-warning" id="message @count">
+                    <div class="panel-heading">@message.TimeStamp</div>
+                    <div class="panel-body">@IntegerFactorizationViewModel.ParseExecutionMessage(message.Message)</div>
+                </div>
+            }
+            else if (message.Severity == ExecutionMessageSeverity.Error)
+            {
+                <div class="panel panel-danger" id="message @count">
+                    <div class="panel-heading">@message.TimeStamp</div>
+                    <div class="panel-body">@Html.Raw(IntegerFactorizationViewModel.ParseExecutionMessage(message.Message))</div>
+                </div>
+            }
+        }
+    </div>
+    @if (User.Identity.IsAuthenticated)
+    {
+        @:</div>
+    }
+</div>
+
+@if (Model.Status == Status.InProgress)
+{
+    if (User.Identity.IsAuthenticated)
+    {
+        <script>
+            (function queryStatusAuth(url) {
+                if (getStatusAuth("@Model.Url") === true) {
+                    setTimeout(queryStatusAuth, 10000, url);
+                }
+            })();
+        </script>
+    }
+    else
+    {
+        <script>
+            (function queryStatus(url) {
+                if (getStatus("@Model.Url") === true) {
+                    setTimeout(queryStatus, 10000, url);
+                }
+            })();
+        </script>
+    }
+}

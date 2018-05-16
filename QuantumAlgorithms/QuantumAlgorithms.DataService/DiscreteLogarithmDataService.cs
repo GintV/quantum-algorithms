@@ -8,7 +8,7 @@ using QuantumAlgorithms.Domain;
 
 namespace QuantumAlgorithms.DataService
 {
-    public class DiscreteLogarithmDataService : DataService<DiscreteLogarithm, Guid>
+    public class DiscreteLogarithmDataService : DataService<DiscreteLogarithm>
     {
         public DiscreteLogarithmDataService(QuantumAlgorithmsDbContext context) : base(context) { }
 
@@ -16,7 +16,7 @@ namespace QuantumAlgorithms.DataService
             FirstOrDefault(run => run.Id == id);
         public override IQueryable<DiscreteLogarithm> GetMany() => Context.DiscreteLogarithmRuns.Include(run => run.Messages);
         public override IQueryable<DiscreteLogarithm> GetManyFilter(Guid[] ids) => Context.DiscreteLogarithmRuns.
-            FromSql($"SELECT * FROM QuantumAlgorithm WHERE Discriminator = 'DiscreteLogarithm' AND ({CombineFilter(ids)})".ToString()).
+            FromSql($"SELECT * FROM QuantumAlgorithm WHERE Discriminator = 'DiscreteLogarithm' AND ({CombineFilterId(ids)})".ToString()).
             Include(run => run.Messages);
     }
 }

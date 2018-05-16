@@ -11,6 +11,12 @@ namespace QuantumAlgorithms.Domain
         // Table columns
         public Guid Id { get; set; }
         public Status Status { get; set; }
+        public DateTime StartTime { get; set; }
+        public DateTime? FinishTime { get; set; }
+
+        public string SubscriberId { get; set; }
+        public string JobId { get; set; }
+        public string InnerJobId { get; set; }
 
         // Navigation properties
         [InverseProperty(nameof(ExecutionMessage.QuantumAlgorithm))]
@@ -22,6 +28,8 @@ namespace QuantumAlgorithms.Domain
         InProgress,
         Finished,
         FinishedWithWarnings,
-        FinishedWithErrors
+        FinishedWithErrors,
+        Enqueued,
+        Canceled
     }
 }

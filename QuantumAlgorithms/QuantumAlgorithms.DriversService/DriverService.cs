@@ -1,4 +1,5 @@
-﻿using QuantumAlgorithms.Common;
+﻿using Hangfire;
+using QuantumAlgorithms.Common;
 using QuantumAlgorithms.Drivers;
 
 namespace QuantumAlgorithms.DriversService
@@ -6,8 +7,10 @@ namespace QuantumAlgorithms.DriversService
     public interface IDriverService<TDriverInput, TResult>
         where TDriverInput : IDriverInput
     {
+        [Queue("driver")]
         TResult Run(TDriverInput driverInput);
     }
+
     public abstract class DriverService<TDriverInput, TResult> : IDriverService<TDriverInput, TResult>
         where TDriverInput : IDriverInput
     {

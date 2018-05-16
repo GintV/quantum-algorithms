@@ -1,0 +1,140 @@
+﻿@using QuantumAlgorithms.Client.ViewModels.Home
+@model QuantumAlgorithms.Client.ViewModels.Home.SolveViewModel
+@{
+    ViewData["Title"] = "Solve";
+}
+
+<div class="container">
+    <br />
+</div>
+
+@if (Model != null && Model.ApiRequestFailed)
+{
+    <div class="container alert alert-danger alert-dismissable fade in">
+        <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+        <strong>Error!</strong> Solution request failed. Try again later.
+    </div>
+}
+
+<div class="container">
+    <h2>Integer factorization problem</h2>
+
+    <form method="post" asp-antiforgery="true">
+        <div class="row well well-sm">
+            <div class="col-md-12">
+                <h3>
+                    Given number <i>N</i>, find numbers <i>p</i> and <i>q</i> so that <i>p * q = N</i>
+                </h3>
+            </div>
+            <div class="col-md-12">
+                <p>
+                    This function <i>(p, q) => p * q</i> is called a one-way function, because it is easy to compute given the inputs, but it is hard to compute the
+                    inputs knowing the result. Because of that, integer factorization is one of the cornerstones of the RSA encryption.
+                </p>
+            </div>
+            <div class="col-md-12">
+                <p>
+                    Solution to this problem utilizes Peter Shor's algorithm, which first time was published in 1994.
+                </p>
+            </div>
+
+            <div class="row">
+                <div asp-validation-summary="ModelOnly"></div>
+                <input type="hidden" asp-for="Problem" value="0"/>
+                <div class="col-md-2">
+                    <div class="form-group">
+                        <label for="Number_IF" class="col-md-1 col-form-label"><i>N:</i></label>
+                        <div class="col-md-8">
+                            <input class="form-control" asp-for="Number" min="2" max="100"/>
+                        </div>
+                        <span asp-validation-for="Number"></span>
+                    </div>
+                </div>
+            </div>
+            <div class="row"><br/>
+            </div>
+            @if (Model != null && Model.Problem == Problem.IntegerFactorization && !Model.IsValid)
+            {
+                <div class="alert alert-warning alert-dismissable fade in">
+                    <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+                    <strong>Warning!</strong> Value must be between 2 and 100.
+                </div>
+            }
+            <div class="col-md-12">
+                <input type="submit" class="btn btn-primary btn-lg btn-block" value="Solve"/>
+            </div>
+        </div>
+    </form>
+</div>
+
+
+<div class="container">
+    <h2>Discrete logarithm problem</h2>
+
+    <form method="post" asp-antiforgery="true">
+
+        <div class="row well well-sm">
+            <div class="col-md-12">
+                <h3>
+                    Given numbers <i>a</i>, <i>g</i> and <i>N</i>, with <i>a</i> being relatively prime to <i>N</i> and <i>g</i> being primitive root of
+                    <i>N</i>, find number <i>r</i> so that <i>a = g<sup>r</sup> (mod N)</i>
+                </h3>
+            </div>
+            <div class="col-md-12">
+                <p>
+                    Function <i>(g, r, N) => g<sup>r</sup> mod N</i> is also called a one-way function (easy to compute, hard to revert). In
+                    <i>a = g<sup>r</sup> (mod N)</i>, <i>r</i> is called a discrete logarithm.
+                </p>
+            </div>
+            <div class="col-md-12">
+                <p>
+                    Solution to this problem varies from one given by Peter Shor in his paper in 1994 (along with integer factorization).
+                </p>
+            </div>
+            <div class="row">
+                <div asp-validation-summary="ModelOnly"></div>
+                <input type="hidden" asp-for="Problem" value="1" />
+                <div class="col-md-2">
+                    <div class="form-group">
+                        <label for="Result_DL" class="col-md-1 col-form-label"><i>a:</i></label>
+                        <div class="col-md-8">
+                            <input class="form-control" asp-for="Result" min="2" max="100" />
+                        </div>
+                        <span asp-validation-for="Result"></span>
+                    </div>
+                </div>
+                <div class="col-md-2">
+                    <div class="form-group">
+                        <label for="Generator_DL" class="col-md-1 col-form-label"><i>g:</i></label>
+                        <div class="col-md-8">
+                            <input class="form-control" asp-for="Generator" min="2" max="100" />
+                        </div>
+                        <span asp-validation-for="Generator"></span>
+                    </div>
+                </div>
+                <div class="col-md-2">
+                    <div class="form-group">
+                        <label for="Modulus_DL" class="col-md-1 col-form-label"><i>N:</i></label>
+                        <div class="col-md-8">
+                            <input class="form-control" asp-for="Modulus" min="2" max="100" />
+                        </div>
+                        <span asp-validation-for="Modulus"></span>
+                    </div>
+                </div>
+            </div>
+            <div class="row"><br /></div>
+            @if (Model != null && Model.Problem == Problem.DiscreteLogarithm && !Model.IsValid)
+            {
+                <div class="col-md-12">
+                    <div class="alert alert-warning alert-dismissable fade in">
+                        <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+                        <strong>Warning!</strong> Values must be between 2 and 100.
+                    </div>
+                </div>
+            }
+            <div class="col-md-12">
+                <input type="submit" class="btn btn-primary btn-lg btn-block" value="Solve" />
+            </div>
+        </div>
+    </form>
+</div>

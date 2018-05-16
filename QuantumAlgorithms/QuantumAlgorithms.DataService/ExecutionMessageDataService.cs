@@ -9,7 +9,7 @@ using QuantumAlgorithms.Domain;
 
 namespace QuantumAlgorithms.DataService
 {
-    public class ExecutionMessageDataService : DataService<ExecutionMessage, Guid>
+    public class ExecutionMessageDataService : DataService<ExecutionMessage>
     {
         public ExecutionMessageDataService(QuantumAlgorithmsDbContext context) : base(context) { }
 

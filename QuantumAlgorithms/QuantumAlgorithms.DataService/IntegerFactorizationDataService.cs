@@ -8,7 +8,7 @@ using QuantumAlgorithms.Domain;
 
 namespace QuantumAlgorithms.DataService
 {
-    public class IntegerFactorizationDataService : DataService<IntegerFactorization, Guid>
+    public class IntegerFactorizationDataService : DataService<IntegerFactorization>
     {
         public IntegerFactorizationDataService(QuantumAlgorithmsDbContext context) : base(context) { }
 
@@ -16,7 +16,7 @@ namespace QuantumAlgorithms.DataService
             FirstOrDefault(run => run.Id == id);
         public override IQueryable<IntegerFactorization> GetMany() => Context.IntegerFactorizationRuns.Include(run => run.Messages);
         public override IQueryable<IntegerFactorization> GetManyFilter(Guid[] ids) => Context.IntegerFactorizationRuns.
-            FromSql($"SELECT * FROM QuantumAlgorithm WHERE Discriminator = 'IntegerFactorization' AND ({CombineFilter(ids)})".ToString()).
+            FromSql($"SELECT * FROM QuantumAlgorithm WHERE Discriminator = 'IntegerFactorization' AND ({CombineFilterId(ids)})".ToString()).
             Include(run => run.Messages);
     }
 }

@@ -50,7 +50,17 @@ namespace QuantumAlgorithms.Data.Migrations
                     b.Property<string>("Discriminator")
                         .IsRequired();
 
+                    b.Property<DateTime?>("FinishTime");
+
+                    b.Property<string>("InnerJobId");
+
+                    b.Property<string>("JobId");
+
+                    b.Property<DateTime>("StartTime");
+
                     b.Property<int>("Status");
+
+                    b.Property<string>("SubscriberId");
 
                     b.HasKey("Id");
 

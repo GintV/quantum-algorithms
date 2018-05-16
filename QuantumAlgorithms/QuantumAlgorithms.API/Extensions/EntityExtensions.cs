@@ -11,7 +11,7 @@ namespace QuantumAlgorithms.API.Extensions
 {
     public static class EntityExtensions
     {
-        public static void StartJobService<TEntity>(this TEntity entity) where TEntity : IEntity =>
+        public static string StartJobService<TEntity>(this TEntity entity) where TEntity : IEntity =>
             BackgroundJob.Enqueue<IJobService<TEntity>>(jobService => jobService.Execute(entity));
     }
 }
