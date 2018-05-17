@@ -7,6 +7,7 @@ using QuantumAlgorithms.Models.Create;
 using QuantumAlgorithms.Models.Get;
 using QuantumAlgorithms.Models.Update;
 using QuantumAlgorithms.API.QueryingParameters;
+using QuantumAlgorithms.Common;
 using QuantumAlgorithms.Domain;
 using static AutoMapper.Mapper;
 using QuantumAlgorithms.DataService;
@@ -22,10 +23,12 @@ namespace QuantumAlgorithms.API.Controllers
 
         protected TEntity CreatedResource { get; private set; }
         protected IDataService<TEntity> ResourceDataService { get; }
+        protected IExecutionLogger ExecutionLogger { get; }
 
-        protected BaseController(IDataService<TEntity> resourceDataService, string getResourceRouteName)
+        protected BaseController(IDataService<TEntity> resourceDataService, IExecutionLogger executionLogger, string getResourceRouteName)
         {
             ResourceDataService = resourceDataService;
+            ExecutionLogger = executionLogger;
             _getResourceRouteName = getResourceRouteName;
         }
 

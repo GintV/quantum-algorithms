@@ -25,11 +25,11 @@ namespace QuantumAlgorithms.Domain
 
     public enum Status
     {
+        Enqueued,
         InProgress,
         Finished,
         FinishedWithWarnings,
         FinishedWithErrors,
-        Enqueued,
         Canceled
     }
 }

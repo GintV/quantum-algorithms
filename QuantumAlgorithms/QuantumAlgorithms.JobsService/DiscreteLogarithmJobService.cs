@@ -21,6 +21,11 @@ namespace QuantumAlgorithms.JobsService
         {
             Logger.SetExecutionId(entity.Id);
             var job = new DiscreteLogarithmJob(Logger, _discreteLogarithmDataService);
+
+            entity.Status = Status.InProgress;
+            _discreteLogarithmDataService.Update(entity);
+            _discreteLogarithmDataService.SaveChanges();
+
             var result = job.Run(entity.Generator, entity.Result, entity.Modulus);
 
             entity = _discreteLogarithmDataService.Get(entity.Id);
@@ -35,7 +40,7 @@ namespace QuantumAlgorithms.JobsService
             }
             entity.FinishTime = DateTime.Now;
 
-            _discreteLogarithmDataService.Update(entity);
+            //_discreteLogarithmDataService.Update(entity);
             _discreteLogarithmDataService.SaveChanges();
         }
     }

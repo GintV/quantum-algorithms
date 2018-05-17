@@ -8,10 +8,12 @@ namespace QuantumAlgorithms.Models
         {
             switch (status)
             {
+                case Status.Enqueued: return "Enqueued"; 
                 case Status.InProgress: return "In Progress";
                 case Status.Finished: return "Finished";
                 case Status.FinishedWithWarnings: return "Finished With Warnings";
                 case Status.FinishedWithErrors: return "Finished With Errors";
+                case Status.Canceled: return "Canceled";
                 default: return "Unknown";
             }
         }

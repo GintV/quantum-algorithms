@@ -294,6 +294,10 @@ function getSolutions(url, meniuItem, deepClone = false) {
 
                     $("#spinner").hide();
 
+                    if (data.length === 0) {
+                        $("#solution-alert").show();
+                    }
+
                     if (page !== 1) {
                         $("#prev").show();
                     }

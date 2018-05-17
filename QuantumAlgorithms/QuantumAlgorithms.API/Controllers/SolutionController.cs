@@ -17,6 +17,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Cors;
 using QuantumAlgorithms.API.Extensions;
 using QuantumAlgorithms.Common;
+using SQLitePCL;
 using static AutoMapper.Mapper;
 using static QuantumAlgorithms.Models.Error.NotFoundDto;
 
@@ -28,16 +29,19 @@ namespace QuantumAlgorithms.API.Controllers
     {
         private const string BasePath = ApiBasePath + PathSep + "Solution";
         private const string BasePathId = BasePath + PathSep + Id;
+        private const string RunCancellationPath = BasePath + "Run" + PathSep + Id;
         private const string GetResourceRouteName = "Get" + "Solution";
 
         private readonly IDataService<DiscreteLogarithm> _discreteLogarithmDataService;
         private readonly IDataService<IntegerFactorization> _integerFactorizationDataService;
+        private readonly IExecutionLogger _executionLogger;
 
         public SolutionLogarithmController(IDataService<DiscreteLogarithm> discreteLogarithmDataService,
-            IDataService<IntegerFactorization> integerFactorizationDataService)
+            IDataService<IntegerFactorization> integerFactorizationDataService, IExecutionLogger executionLogger)
         {
             _discreteLogarithmDataService = discreteLogarithmDataService;
             _integerFactorizationDataService = integerFactorizationDataService;
+            _executionLogger = executionLogger;
         }
 
         [HttpDelete(BasePathId)]
@@ -96,6 +100,48 @@ namespace QuantumAlgorithms.API.Controllers
             List<QuantumAlgorithmGetDto> solutions = discreteLogarithms.ToList();
             solutions.AddRange(integerFactorizations);
             return Ok(solutions.OrderByDescending(solution => solution.StartTime).AsQueryable().ApplyPaging(baseResourceParameters));
+        }
+
+        [HttpDelete(RunCancellationPath)]
+        public IActionResult CancelExecution(Guid id)
+        {
+            var resource = _discreteLogarithmDataService.Get(id);
+            if (resource != null)
+            {
+                if (resource.SubscriberId != User.Claims.First(claim => claim.Type == JwtClaimTypes.Subject).Value)
+                    return NotFound(ResourceNotFound(id.ToString()));
+
+                if (resource.InnerJobId != null)
+                    BackgroundJob.Delete(resource.InnerJobId);
+
+                BackgroundJob.Delete(resource.JobId);
+
+                _executionLogger.SetExecutionId(id);
+                _executionLogger.Error("Execution canceled by the user.");
+
+                resource.Status = Status.Canceled;
+                _discreteLogarithmDataService.Delete(resource);
+                _discreteLogarithmDataService.SaveChanges();
+            }
+            else
+            {
+                var resource2 = _integerFactorizationDataService.Get(id);
+                if (resource2 == null || resource2.SubscriberId != User.Claims.First(claim => claim.Type == JwtClaimTypes.Subject).Value)
+                    return NotFound(ResourceNotFound(id.ToString()));
+
+                if (resource2.InnerJobId != null)
+                    BackgroundJob.Delete(resource2.InnerJobId);
+
+                BackgroundJob.Delete(resource2.JobId);
+
+                _executionLogger.SetExecutionId(id);
+                _executionLogger.Error("Execution canceled by the user.");
+
+                resource2.Status = Status.Canceled;
+                _integerFactorizationDataService.Delete(resource2);
+                _integerFactorizationDataService.SaveChanges();
+            }
+            return NoContent();
         }
     }
 }

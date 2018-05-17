@@ -29,10 +29,11 @@ namespace QuantumAlgorithms.API.Controllers
     {
         private const string BasePath = ApiBasePath + PathSep + nameof(IntegerFactorization);
         private const string BasePathId = BasePath + PathSep + Id;
+        private const string RunCancellationPath = BasePath + "Run" + PathSep + Id;
         private const string GetResourceRouteName = "Get" + nameof(IntegerFactorization);
 
-        public IntegerFactorizationController(IDataService<IntegerFactorization> integerFactorizationDataService) :
-            base(integerFactorizationDataService, GetResourceRouteName)
+        public IntegerFactorizationController(IDataService<IntegerFactorization> integerFactorizationDataService, IExecutionLogger executionLogger) :
+            base(integerFactorizationDataService, executionLogger, GetResourceRouteName)
         { }
 
         [AllowAnonymous]
@@ -47,8 +48,11 @@ namespace QuantumAlgorithms.API.Controllers
                 CreatedResource.SubscriberId = User.Claims.First(claim => claim.Type == JwtClaimTypes.Subject).Value;
 
             CreatedResource.JobId = CreatedResource.StartJobService();
-            ResourceDataService.Update(CreatedResource);
+            //ResourceDataService.Update(CreatedResource);
             ResourceDataService.SaveChanges();
+
+            ExecutionLogger.SetExecutionId(CreatedResource.Id);
+            ExecutionLogger.Info("Enqueued for execution.");
 
             return result;
         }
@@ -82,6 +86,29 @@ namespace QuantumAlgorithms.API.Controllers
             FilterByStatusesParameter filterByStatusesParameter) => Ok(Map<IEnumerable<IntegerFactorizationGetDto>>(ResourceDataService.
                 GetManyFilter(baseResourceParameters, filterByIdsParameter, filterByStatusesParameter,
                 User.Claims.First(claim => claim.Type == JwtClaimTypes.Subject).Value)));
+
+        [HttpDelete(RunCancellationPath)]
+        public IActionResult CancelExecution(Guid id)
+        {
+            var resource = ResourceDataService.Get(id);
+            if (resource == null || resource.SubscriberId != User.Claims.First(claim => claim.Type == JwtClaimTypes.Subject).Value)
+                return NotFound(ResourceNotFound(id.ToString()));
+            if (resource.Status == Status.Enqueued || resource.Status == Status.InProgress)
+            {
+                if (resource.InnerJobId != null)
+                    BackgroundJob.Delete(resource.InnerJobId);
+
+                BackgroundJob.Delete(resource.JobId);
+
+                ExecutionLogger.SetExecutionId(id);
+                ExecutionLogger.Error("Execution canceled by the user.");
+
+                resource.Status = Status.Canceled;
+                ResourceDataService.Delete(resource);
+                ResourceDataService.SaveChanges();
+            }
+            return NoContent();
+        }
 
         //[HttpGet(BasePath)]
         //public IActionResult GetResources(BaseResourceParameters baseResourceParameters, FilterByIdsParameter<Guid> filterByIdsParameter) =>

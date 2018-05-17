@@ -6,7 +6,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\QuantumAlgorithms.DataService\QuantumAlgorithms.DataService.csproj" />
-    <ProjectReference Include="..\QuantumAlgorithms.Domain\QuantumAlgorithms.Domain.csproj" />
   </ItemGroup>
 
 </Project>
