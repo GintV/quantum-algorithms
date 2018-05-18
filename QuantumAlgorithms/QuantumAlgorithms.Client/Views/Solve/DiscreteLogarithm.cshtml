@@ -34,8 +34,10 @@
             </div>
         </div>
         @:<div class="col-md-9">
-    }
-    <h2>Discrete Logarithm</h2>
+        }
+    <div class="row">
+        <h2>Discrete Logarithm</h2>
+    </div>
 
     <div style="font-size: @(User.Identity.IsAuthenticated ? "14" : "18")px;" class="row well well-sm">
         <div class="col-md-4" id="details">
@@ -112,6 +114,17 @@
     </div>
 
     <div class="row">
+        @if (Model.Status == Status.Enqueued || Model.Status == Status.InProgress)
+        {
+            <a class="btn btn-default" href="#" data-href="/Solve/CancelSolution?id=@Model.Id&solution=DiscreteLogarithm" data-toggle="modal" data-target="#confirm-cancel">Cancel solving</a>
+        }
+        else
+        {
+            <a class="btn btn-default" href="#" data-href="/Solve/DeleteSolution?id=@Model.Id&status=@Model.Status" data-toggle="modal" data-target="#confirm-delete">Delete solution</a>
+        }
+    </div>
+
+    <div class="row">
         <h3>Execution Flow</h3>
     </div>
     <div id="messages">
@@ -152,7 +165,7 @@
     @if (User.Identity.IsAuthenticated)
     {
         @:</div>
-    }
+}
 </div>
 @if (Model.Status == Status.InProgress)
 {
@@ -177,3 +190,47 @@
         </script>
     }
 }
+
+<div class="modal fade" id="confirm-delete" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title" id="myModalLabel">Confirm Delete</h4>
+            </div>
+
+            <div class="modal-body">
+                <p>You are going to delete this solution, all information will be lost.</p>
+                <p>Do you want to proceed?</p>
+                <p class="debug-url"></p>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                <a class="btn btn-danger btn-ok">Delete solution</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="confirm-cancel" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title" id="myModalLabel">Confirm Cancellation</h4>
+            </div>
+
+            <div class="modal-body">
+                <p>You are going to cancel this solution execution, no further calculations will be made.</p>
+                <p>Do you want to proceed?</p>
+                <p class="debug-url"></p>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                <a class="btn btn-danger btn-ok">Cancel solving</a>
+            </div>
+        </div>
+    </div>
+</div>

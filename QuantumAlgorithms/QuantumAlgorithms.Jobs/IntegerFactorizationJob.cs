@@ -2,9 +2,11 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Threading;
 using Hangfire;
 using Hangfire.States;
+using Microsoft.Quantum.Simulation.Simulators;
 using QuantumAlgorithms.DataService;
 using QuantumAlgorithms.Domain;
 using static QuantumAlgorithms.Jobs.Constants;
@@ -15,10 +17,8 @@ using static QuantumAlgorithms.Jobs.IntegerFactorizationJobResult;
 
 namespace QuantumAlgorithms.Jobs
 {
-    public class IntegerFactorizationJob
+    public class IntegerFactorizationJob : Job
     {
-        private static readonly object Lock = new object();
-
         private IExecutionLogger _logger;
         private readonly IDataService<IntegerFactorization> _dataService;
         private bool _hadWarnings;
@@ -132,6 +132,7 @@ namespace QuantumAlgorithms.Jobs
                 lock (Lock)
                 {
                     Log.Info("Period estimation started.");
+                    PeriodEstimationDriver.QuantumSimulator = new QuantumSimulator();
                     var jobId = BackgroundJob.Enqueue<IDriverService<PeriodEstimationDriverInput, int>>(driverService =>
                         driverService.Run(new PeriodEstimationDriverInput
                         {
@@ -151,6 +152,10 @@ namespace QuantumAlgorithms.Jobs
             catch (TimeoutException e)
             {
                 Log.Error($"Period estimation failed. {e.Message} Aborting execution.");
+                period = -1;
+            }
+            catch (OperationCanceledException)
+            {
                 period = -1;
             }
             catch (Exception e) when (e is KeyNotFoundException || e is FormatException)
@@ -175,8 +180,18 @@ namespace QuantumAlgorithms.Jobs
                 Thread.Sleep(5000);
                 if (stopwatch.ElapsedMilliseconds > PeriodEstimationTimeoutMilliseconds)
                 {
+                    PeriodEstimationDriver.QuantumSimulator?.Dispose();
+                    PeriodEstimationDriver.QuantumSimulator = null;
                     BackgroundJob.Delete(jobId);
                     throw new TimeoutException("Period estimation reached a timeout.");
+                }
+                var entity = _dataService.Get(_logger.GetExecutionId());
+                if (entity.Messages.Last().Severity == ExecutionMessageSeverity.Error)
+                {
+                    PeriodEstimationDriver.QuantumSimulator?.Dispose();
+                    PeriodEstimationDriver.QuantumSimulator = null;
+                    BackgroundJob.Delete(jobId);
+                    throw new OperationCanceledException();
                 }
             }
 

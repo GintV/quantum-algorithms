@@ -167,14 +167,14 @@ namespace QuantumAlgorithms.API
             app.UseHangfireServer(new BackgroundJobServerOptions
             {
                 ServerName = "JobServiceServer",
-                WorkerCount = 19,
+                WorkerCount = 15,
                 Queues = new[] { "job" }
             });
 
             app.UseHangfireServer(new BackgroundJobServerOptions
             {
                 ServerName = "DriverServiceServer",
-                WorkerCount = 1,
+                WorkerCount = 10,
                 Queues = new[] { "driver" }
             });
 

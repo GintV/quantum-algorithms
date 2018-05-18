@@ -52,6 +52,8 @@ namespace QuantumAlgorithms.API.Controllers
             {
                 if (resource.SubscriberId != User.Claims.First(claim => claim.Type == JwtClaimTypes.Subject).Value)
                     return NotFound(ResourceNotFound(id.ToString()));
+
+                CancelExecution(id);
                 _discreteLogarithmDataService.Delete(resource);
                 _discreteLogarithmDataService.SaveChanges();
             }
@@ -60,6 +62,8 @@ namespace QuantumAlgorithms.API.Controllers
                 var resource2 = _integerFactorizationDataService.Get(id);
                 if (resource2 == null || resource2.SubscriberId != User.Claims.First(claim => claim.Type == JwtClaimTypes.Subject).Value)
                     return NotFound(ResourceNotFound(id.ToString()));
+
+                CancelExecution(id);
                 _integerFactorizationDataService.Delete(resource2);
                 _integerFactorizationDataService.SaveChanges();
             }
@@ -111,16 +115,17 @@ namespace QuantumAlgorithms.API.Controllers
                 if (resource.SubscriberId != User.Claims.First(claim => claim.Type == JwtClaimTypes.Subject).Value)
                     return NotFound(ResourceNotFound(id.ToString()));
 
-                if (resource.InnerJobId != null)
-                    BackgroundJob.Delete(resource.InnerJobId);
+                //if (resource.InnerJobId != null)
+                //    BackgroundJob.Delete(resource.InnerJobId);
 
-                BackgroundJob.Delete(resource.JobId);
+                //BackgroundJob.Delete(resource.JobId);
 
                 _executionLogger.SetExecutionId(id);
                 _executionLogger.Error("Execution canceled by the user.");
 
                 resource.Status = Status.Canceled;
-                _discreteLogarithmDataService.Delete(resource);
+                resource.CancelJob = true;
+                _discreteLogarithmDataService.Update(resource);
                 _discreteLogarithmDataService.SaveChanges();
             }
             else
@@ -129,16 +134,17 @@ namespace QuantumAlgorithms.API.Controllers
                 if (resource2 == null || resource2.SubscriberId != User.Claims.First(claim => claim.Type == JwtClaimTypes.Subject).Value)
                     return NotFound(ResourceNotFound(id.ToString()));
 
-                if (resource2.InnerJobId != null)
-                    BackgroundJob.Delete(resource2.InnerJobId);
+                //if (resource2.InnerJobId != null)
+                //    BackgroundJob.Delete(resource2.InnerJobId);
 
-                BackgroundJob.Delete(resource2.JobId);
+                //BackgroundJob.Delete(resource2.JobId);
 
                 _executionLogger.SetExecutionId(id);
                 _executionLogger.Error("Execution canceled by the user.");
 
                 resource2.Status = Status.Canceled;
-                _integerFactorizationDataService.Delete(resource2);
+                resource2.CancelJob = true;
+                _integerFactorizationDataService.Update(resource2);
                 _integerFactorizationDataService.SaveChanges();
             }
             return NoContent();

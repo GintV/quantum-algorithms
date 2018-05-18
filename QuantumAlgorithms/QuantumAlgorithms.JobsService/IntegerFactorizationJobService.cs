@@ -23,13 +23,13 @@ namespace QuantumAlgorithms.JobsService
             Logger.SetExecutionId(entity.Id);
             var job = new IntegerFactorizationJob(Logger, _integerFactorizationDataService);
 
+            entity = _integerFactorizationDataService.Get(entity.Id);
             entity.Status = Status.InProgress;
             _integerFactorizationDataService.Update(entity);
             _integerFactorizationDataService.SaveChanges();
 
             var result = job.Run(entity.Number);
 
-            entity = _integerFactorizationDataService.Get(entity.Id);
             if (result.IsSuccess)
             {
                 entity.FactorP = result.Factors.P;

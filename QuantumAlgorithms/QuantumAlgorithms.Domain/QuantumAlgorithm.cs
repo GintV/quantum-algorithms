@@ -17,6 +17,7 @@ namespace QuantumAlgorithms.Domain
         public string SubscriberId { get; set; }
         public string JobId { get; set; }
         public string InnerJobId { get; set; }
+        public bool CancelJob { get; set; }
 
         // Navigation properties
         [InverseProperty(nameof(ExecutionMessage.QuantumAlgorithm))]

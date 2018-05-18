@@ -47,7 +47,7 @@ namespace QuantumAlgorithms.API.Controllers
                 CreatedResource.SubscriberId = User.Claims.First(claim => claim.Type == JwtClaimTypes.Subject).Value;
 
             CreatedResource.JobId = CreatedResource.StartJobService();
-            //ResourceDataService.Update(CreatedResource);
+            ResourceDataService.Update(CreatedResource);
             ResourceDataService.SaveChanges();
 
             ExecutionLogger.SetExecutionId(CreatedResource.Id);
@@ -65,6 +65,8 @@ namespace QuantumAlgorithms.API.Controllers
             var resource = ResourceDataService.Get(id);
             if (resource == null || resource.SubscriberId != User.Claims.First(claim => claim.Type == JwtClaimTypes.Subject).Value)
                 return NotFound(ResourceNotFound(id.ToString()));
+
+            CancelExecution(id);
             ResourceDataService.Delete(resource);
             ResourceDataService.SaveChanges();
             return NoContent();
@@ -94,16 +96,17 @@ namespace QuantumAlgorithms.API.Controllers
                 return NotFound(ResourceNotFound(id.ToString()));
             if (resource.Status == Status.Enqueued || resource.Status == Status.InProgress)
             {
-                if(resource.InnerJobId != null)
-                    BackgroundJob.Delete(resource.InnerJobId);
+                //if(resource.InnerJobId != null)
+                //    BackgroundJob.Delete(resource.InnerJobId);
 
-                BackgroundJob.Delete(resource.JobId);
+                //BackgroundJob.Delete(resource.JobId);
 
                 ExecutionLogger.SetExecutionId(id);
                 ExecutionLogger.Error("Execution canceled by the user.");
 
                 resource.Status = Status.Canceled;
-                ResourceDataService.Delete(resource);
+                resource.CancelJob = true;
+                ResourceDataService.Update(resource);
                 ResourceDataService.SaveChanges();
             }
             return NoContent();

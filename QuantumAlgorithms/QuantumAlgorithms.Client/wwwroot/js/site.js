@@ -127,7 +127,7 @@ function getStatusCore(url, data) {
         var mainId = document.createAttribute("id");
         mainId.value = "message " + i;
 
-        if (allMessages[i]["severity"] === 0 && i === allMessages.length - 1 && (data["status"] === 1 || data["status"] === 2))
+        if (allMessages[i]["severity"] === 0 && i === allMessages.length - 1 && (data["status"] === 2 || data["status"] === 3))
             mainClass.value = "panel panel-success";
         else if (allMessages[i]["severity"] === 0)
             mainClass.value = "panel panel-info";
@@ -160,14 +160,14 @@ function getStatusCore(url, data) {
         //$("#message " + i).fadeIn("slow");
     }
 
-    if (data["status"] === 0) {
+    if (data["status"] === 0 || data["status"] === 1) {
         if (update) {
             showInfoAlert();
         }
     } else {
-        if (data["status"] === 3) {
+        if (data["status"] === 4) {
             showDangerAlert();
-        } else {
+        } else if (data["status"] === 2 || data["status"] === 3) {
             showSuccessAlert();
         }
 
@@ -193,7 +193,7 @@ function getStatusCore(url, data) {
 
         details.parentNode.replaceChild(newDetails, details);
 
-        if (data["status"] !== 3) {
+        if (data["status"] !== 4 && data["status"] !== 5) {
             var output = document.getElementById('output');
             var newOutput = output.cloneNode(true);
             if (url.includes("IntegerFactorization")) {
@@ -261,13 +261,13 @@ function getSolutions(url, meniuItem, deepClone = false) {
     var statuses = "";
 
     if (meniuItem === 1)
-        statuses = "4";
-    else if (meniuItem === 2)
         statuses = "0";
+    else if (meniuItem === 2)
+        statuses = "1";
     else if (meniuItem === 3)
-        statuses = "[1, 2]";
+        statuses = "[2, 3]";
     else if (meniuItem === 4)
-        statuses = "3";
+        statuses = "4";
     else if (meniuItem === 5)
         statuses = "5";
     else

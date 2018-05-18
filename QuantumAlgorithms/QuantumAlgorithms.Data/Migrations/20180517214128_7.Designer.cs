@@ -13,9 +13,10 @@ using System;
 namespace QuantumAlgorithms.Data.Migrations
 {
     [DbContext(typeof(QuantumAlgorithmsDbContext))]
-    partial class QuantumAlgorithmsDbContextModelSnapshot : ModelSnapshot
+    [Migration("20180517214128_7")]
+    partial class _7
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

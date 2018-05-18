@@ -8,6 +8,7 @@ namespace QuantumAlgorithms.Drivers.PeriodEstimation
 {
     public class PeriodEstimationDriver
     {
+        public static QuantumSimulator QuantumSimulator;
         private IExecutionLogger _logger;
 
         public PeriodEstimationDriver(IExecutionLogger logger)
@@ -23,10 +24,12 @@ namespace QuantumAlgorithms.Drivers.PeriodEstimation
         {
             try
             {
-                using (var sim = new QuantumSimulator())
-                {
-                    return PeriodEstimation.Run(sim, number, modulus).Result;
-                }
+                if (QuantumSimulator != null)
+                    return PeriodEstimation.Run(QuantumSimulator, number, modulus).Result;
+
+                Log.Error("Period estimation failed. Unexpected error occurred.");
+                Log.Error("Fatal error. Aborting execution.");
+                return -1;
             }
             catch (AggregateException e)
             {
