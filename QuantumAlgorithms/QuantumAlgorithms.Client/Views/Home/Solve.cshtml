@@ -76,14 +76,14 @@
         <div class="row well well-sm">
             <div class="col-md-12">
                 <h3>
-                    Given numbers <i>a</i>, <i>g</i> and <i>N</i>, with <i>a</i> being relatively prime to <i>N</i> and <i>g</i> being primitive root of
-                    <i>N</i>, find number <i>r</i> so that <i>a = g<sup>r</sup> (mod N)</i>
+                    Given numbers <i>r</i>, <i>g</i> and <i>N</i>, with <i>r</i> being relatively prime to <i>N</i> and <i>g</i> being primitive root of
+                    <i>N</i>, find number <i>k</i> so that <i>r = g<sup>k</sup> (mod N)</i>
                 </h3>
             </div>
             <div class="col-md-12">
                 <p>
-                    Function <i>(g, r, N) => g<sup>r</sup> mod N</i> is also called a one-way function (easy to compute, hard to revert). In
-                    <i>a = g<sup>r</sup> (mod N)</i>, <i>r</i> is called a discrete logarithm.
+                    Function <i>(g, k, N) => g<sup>k</sup> mod N</i> is also called a one-way function (easy to compute, hard to revert). In
+                    <i>r = g<sup>k</sup> (mod N)</i>, <i>k</i> is called a discrete logarithm.
                 </p>
             </div>
             <div class="col-md-12">
@@ -96,7 +96,7 @@
                 <input type="hidden" asp-for="Problem" value="1" />
                 <div class="col-md-2">
                     <div class="form-group">
-                        <label for="Result_DL" class="col-md-1 col-form-label"><i>a:</i></label>
+                        <label for="Result_DL" class="col-md-1 col-form-label"><i>r:</i></label>
                         <div class="col-md-8">
                             <input class="form-control" asp-for="Result" min="2" max="100" />
                         </div>

@@ -5,6 +5,7 @@ using System.Diagnostics;
 using System.Threading;
 using Hangfire;
 using Hangfire.States;
+using Hangfire.Storage;
 using Microsoft.Quantum.Simulation.Simulators;
 using QuantumAlgorithms.DataService;
 using QuantumAlgorithms.Domain;

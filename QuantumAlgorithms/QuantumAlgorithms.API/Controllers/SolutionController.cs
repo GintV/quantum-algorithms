@@ -25,7 +25,7 @@ using static QuantumAlgorithms.Models.Error.NotFoundDto;
 namespace QuantumAlgorithms.API.Controllers
 {
     [Authorize]
-    public class SolutionLogarithmController : Controller
+    public class SolutionController : Controller
     {
         private const string BasePath = ApiBasePath + PathSep + "Solution";
         private const string BasePathId = BasePath + PathSep + Id;
@@ -36,7 +36,7 @@ namespace QuantumAlgorithms.API.Controllers
         private readonly IDataService<IntegerFactorization> _integerFactorizationDataService;
         private readonly IExecutionLogger _executionLogger;
 
-        public SolutionLogarithmController(IDataService<DiscreteLogarithm> discreteLogarithmDataService,
+        public SolutionController(IDataService<DiscreteLogarithm> discreteLogarithmDataService,
             IDataService<IntegerFactorization> integerFactorizationDataService, IExecutionLogger executionLogger)
         {
             _discreteLogarithmDataService = discreteLogarithmDataService;

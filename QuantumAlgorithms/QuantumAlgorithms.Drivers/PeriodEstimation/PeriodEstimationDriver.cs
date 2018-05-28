@@ -16,7 +16,7 @@ namespace QuantumAlgorithms.Drivers.PeriodEstimation
             _logger = logger;
         }
 
-        public void SetLogger(IExecutionLogger logger) => _logger = logger;
+        //public void SetLogger(IExecutionLogger logger) => _logger = logger;
         private IExecutionLogger Log => _logger;
 
 

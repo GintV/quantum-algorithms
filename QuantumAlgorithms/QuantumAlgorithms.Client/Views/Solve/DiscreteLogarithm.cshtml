@@ -167,7 +167,7 @@
         @:</div>
 }
 </div>
-@if (Model.Status == Status.InProgress)
+@if (Model.Status == Status.Enqueued || Model.Status == Status.InProgress)
 {
     if (User.Identity.IsAuthenticated)
     {
@@ -207,7 +207,7 @@
 
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
-                <a class="btn btn-danger btn-ok">Delete solution</a>
+                <a class="btn btn-danger btn-ok" href="/Solve/DeleteSolution?id=@Model.Id&status=@((int)Model.Status)">Delete solution</a>
             </div>
         </div>
     </div>
@@ -229,7 +229,7 @@
 
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
-                <a class="btn btn-danger btn-ok">Cancel solving</a>
+                <a class="btn btn-danger btn-ok" href="/Solve/CancelSolution?id=@Model.Id&solution=DiscreteLogarithm">Cancel solving</a>
             </div>
         </div>
     </div>

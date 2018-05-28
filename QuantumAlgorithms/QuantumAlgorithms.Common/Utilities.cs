@@ -11,7 +11,7 @@ namespace QuantumAlgorithms.Common
 
         public static bool IsCoprime(this int a, int b) => GCD(a, b) == 1;
 
-        public static int PickCoprime(int number) => PickCoprimeHelper(new Random(), number);
+        //public static int PickCoprime(int number) => PickCoprimeHelper(new Random(), number);
 
         public static int BitSize(int number)
         {
@@ -53,10 +53,10 @@ namespace QuantumAlgorithms.Common
             return result;
         }
 
-        private static int PickCoprimeHelper(Random random, int number)
-        {
-            var coprimeCandidate = random.Next(number - 2) + 2;
-            return coprimeCandidate.IsCoprime(number) ? coprimeCandidate : PickCoprimeHelper(random, number);
-        }
+        //private static int PickCoprimeHelper(Random random, int number)
+        //{
+        //    var coprimeCandidate = random.Next(number - 2) + 2;
+        //    return coprimeCandidate.IsCoprime(number) ? coprimeCandidate : PickCoprimeHelper(random, number);
+        //}
     }
 }

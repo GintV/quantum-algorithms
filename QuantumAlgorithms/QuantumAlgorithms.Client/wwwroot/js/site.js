@@ -105,6 +105,8 @@ function getStatusCore(url, data) {
     //console.log(printedMessages.childElementCount);
     //console.log(allMessages.length);
 
+    console.log("heartbeat");
+
     var panelHeading = document.createAttribute("class");
     panelHeading.value = "panel-heading";
     var panelBody = document.createAttribute("class");
