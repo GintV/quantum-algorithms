@@ -23,8 +23,14 @@ namespace QuantumAlgorithms.Common
         public void Info(string message) =>
             Log(message, ExecutionMessageSeverity.Info);
 
-        public void Warning(string message) =>
-            Log(message, ExecutionMessageSeverity.Warning);
+        public void Warning(string message)
+        {
+            var dataService = _dataService as ExecutionMessageDataService;
+            var lastMessage = dataService.GetLastByExecutionId(_executionId);
+
+            if (lastMessage == null || lastMessage.Severity != ExecutionMessageSeverity.Error)
+                Log(message, ExecutionMessageSeverity.Warning);
+        }
 
         public void Error(string message) =>
             Log(message, ExecutionMessageSeverity.Error);

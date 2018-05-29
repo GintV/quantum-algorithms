@@ -16,5 +16,8 @@ namespace QuantumAlgorithms.DataService
         public override ExecutionMessage Get(Guid id) => null;
         public override IQueryable<ExecutionMessage> GetMany() => Enumerable.Empty<ExecutionMessage>().AsQueryable();
         public override IQueryable<ExecutionMessage> GetManyFilter(Guid[] ids) => Enumerable.Empty<ExecutionMessage>().AsQueryable();
+
+        public ExecutionMessage GetLastByExecutionId(Guid id) => Context.ExecutionMessages.
+            Where(message => message.QuantumAlgorithmId == id).OrderBy(message => message.TimeStamp).LastOrDefault();
     }
 }

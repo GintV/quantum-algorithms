@@ -105,6 +105,7 @@ namespace QuantumAlgorithms.API.Controllers
                 ExecutionLogger.Error("Execution canceled by the user.");
 
                 resource.Status = Status.Canceled;
+                resource.FinishTime = DateTime.Now;
                 resource.CancelJob = true;
                 ResourceDataService.Update(resource);
                 ResourceDataService.SaveChanges();

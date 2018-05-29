@@ -1,4 +1,5 @@
-﻿@using QuantumAlgorithms.Client.ViewModels.Solve
+﻿@using System.Globalization
+@using QuantumAlgorithms.Client.ViewModels.Solve
 @using QuantumAlgorithms.Domain
 @model QuantumAlgorithms.Client.ViewModels.Solve.IntegerFactorizationViewModel
 @{
@@ -35,7 +36,7 @@
             </div>
         </div>
         @:<div class="col-md-9">
-        }
+}
     <div class="row">
         <h2>Integer Factorization</h2>
     </div>
@@ -53,7 +54,7 @@
             <div class="row">
                 <div class="form-group" id="startTime">
                     <label class="col-md-5">Start Time:</label>
-                    @Model.StartTime
+                    @Model.StartTime.ToString(new CultureInfo("lt"))
                 </div>
             </div>
             @if (Model?.FinishTime != null)
@@ -61,7 +62,7 @@
                 <div class="row">
                     <div class="form-group" id="finishTime">
                         <label class="col-md-5">Finish Time:</label>
-                        @Model.FinishTime
+                        @Model.FinishTime?.ToString(new CultureInfo("lt"))
                     </div>
                 </div>
             }
@@ -95,9 +96,13 @@
         </div>
     </div>
 
-    <div class="alert alert-info alert-dismissible fade in" id="info-alert" hidden>
+    <div class="alert alert-info alert-dismissible fade in" id="info-alert-1" hidden>
         <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
         <strong>Information updated!</strong>
+    </div>
+    <div class="alert alert-info alert-dismissible fade in" id="info-alert-2" hidden>
+        <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+        <strong>Information up to date!</strong>
     </div>
     <div class="alert alert-success alert-dismissible fade in" id="success-alert" hidden>
         <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
@@ -107,11 +112,12 @@
         <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
         <strong>Execution finished with errors!</strong> See messages below for more information
     </div>
-    
+
     <div class="row">
         @if (Model.Status == Status.Enqueued || Model.Status == Status.InProgress)
         {
-            <a class="btn btn-default" href="#" data-href="/Solve/CancelSolution?id=@Model.Id&solution=IntegerFactorization" data-toggle="modal" data-target="#confirm-cancel">Cancel solving</a>
+            <a id="cancel-button" class="btn btn-default" href="#" data-href="/Solve/CancelSolution?id=@Model.Id&solution=IntegerFactorization" data-toggle="modal" data-target="#confirm-cancel">Cancel solving</a>
+            <a id="delete-button" class="btn btn-default" href="#" data-href="/Solve/DeleteSolution?id=@Model.Id&status=@((int)Model.Status)" data-toggle="modal" data-target="#confirm-delete" hidden>Delete solution</a>
         }
         else
         {
@@ -130,28 +136,28 @@
             if (message.Severity == ExecutionMessageSeverity.Info && count == 0 && (Model.Status == Status.Finished || Model.Status == Status.FinishedWithWarnings))
             {
                 <div class="panel panel-success" id="message @count">
-                    <div class="panel-heading">@message.TimeStamp</div>
+                    <div class="panel-heading">@message.TimeStamp.ToString(new CultureInfo("lt"))</div>
                     <div class="panel-body">@IntegerFactorizationViewModel.ParseExecutionMessage(message.Message)</div>
                 </div>
             }
             else if (message.Severity == ExecutionMessageSeverity.Info)
             {
                 <div class="panel panel-info" id="message @count">
-                    <div class="panel-heading">@message.TimeStamp</div>
+                    <div class="panel-heading">@message.TimeStamp.ToString(new CultureInfo("lt"))</div>
                     <div class="panel-body">@IntegerFactorizationViewModel.ParseExecutionMessage(message.Message)</div>
                 </div>
             }
             else if (message.Severity == ExecutionMessageSeverity.Warning)
             {
                 <div class="panel panel-warning" id="message @count">
-                    <div class="panel-heading">@message.TimeStamp</div>
+                    <div class="panel-heading">@message.TimeStamp.ToString(new CultureInfo("lt"))</div>
                     <div class="panel-body">@IntegerFactorizationViewModel.ParseExecutionMessage(message.Message)</div>
                 </div>
             }
             else if (message.Severity == ExecutionMessageSeverity.Error)
             {
                 <div class="panel panel-danger" id="message @count">
-                    <div class="panel-heading">@message.TimeStamp</div>
+                    <div class="panel-heading">@message.TimeStamp.ToString(new CultureInfo("lt"))</div>
                     <div class="panel-body">@Html.Raw(IntegerFactorizationViewModel.ParseExecutionMessage(message.Message))</div>
                 </div>
             }

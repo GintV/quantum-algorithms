@@ -124,6 +124,7 @@ namespace QuantumAlgorithms.API.Controllers
                 _executionLogger.Error("Execution canceled by the user.");
 
                 resource.Status = Status.Canceled;
+                resource.FinishTime = DateTime.Now;
                 resource.CancelJob = true;
                 _discreteLogarithmDataService.Update(resource);
                 _discreteLogarithmDataService.SaveChanges();
@@ -143,6 +144,7 @@ namespace QuantumAlgorithms.API.Controllers
                 _executionLogger.Error("Execution canceled by the user.");
 
                 resource2.Status = Status.Canceled;
+                resource2.FinishTime = DateTime.Now;
                 resource2.CancelJob = true;
                 _integerFactorizationDataService.Update(resource2);
                 _integerFactorizationDataService.SaveChanges();

@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Threading;
 using Hangfire;
 using Hangfire.States;
@@ -92,7 +93,7 @@ namespace QuantumAlgorithms.Jobs
             var periodsGcd = GCD(generatorPeriod, resultPeriod);
             var basePeriod = generatorPeriod;
 
-            if ((CalculateExpMod(generator, generatorPeriod / periodsGcd, modulus) * 
+            if ((CalculateExpMod(generator, generatorPeriod / periodsGcd, modulus) *
                  CalculateExpMod(result, resultPeriod / periodsGcd, modulus)) % modulus == 1)
             {
                 generatorPeriod = generatorPeriod / periodsGcd;
@@ -128,7 +129,7 @@ namespace QuantumAlgorithms.Jobs
             }
 
             Log.Error($"Failed to calculate multiple ({generatorPeriod}, {resultPeriod}) multiply of a period. Multiply is greater than {multiply} and " +
-                $"thus it is inefficient to calculate discrete logarithm, or generator {generator} is not the actual generator of "+
+                $"thus it is inefficient to calculate discrete logarithm, or generator {generator} is not the actual generator of " +
                 $"modulus {modulus} and remainder {result} could actually be impossible to get.");
 
             return FailResult();
@@ -155,12 +156,19 @@ namespace QuantumAlgorithms.Jobs
 
         private bool TryEstimatePeriodHelper(int a, int number, out int period)
         {
-            try
+            lock (Lock)
             {
-                lock (Lock)
+                try
                 {
+                    var entity = _dataService.Get(_logger.GetExecutionId());
+                    if (entity == null || entity.Status == Status.Canceled || entity.Messages.Last().Message.Contains("canceled"))
+                    {
+                        period = -1;
+                        return false;
+                    }
+
+                    PeriodEstimationDriver.QuantumSimulator = new QuantumSimulator(false, 5);
                     Log.Info("Period estimation started.");
-                    PeriodEstimationDriver.QuantumSimulator = new QuantumSimulator();
                     var jobId = BackgroundJob.Enqueue<IDriverService<PeriodEstimationDriverInput, int>>(driverService =>
                         driverService.Run(new PeriodEstimationDriverInput
                         {
@@ -169,28 +177,28 @@ namespace QuantumAlgorithms.Jobs
                             Modulus = number
                         }));
 
-                    var entity = _dataService.Get(_logger.GetExecutionId());
+                    entity = _dataService.Get(_logger.GetExecutionId());
                     entity.InnerJobId = jobId;
                     _dataService.Update(entity);
                     _dataService.SaveChanges();
 
                     period = WaitPeriodEstimation(jobId);
                 }
-            }
-            catch (TimeoutException e)
-            {
-                Log.Error($"Period estimation failed. {e.Message} Aborting execution.");
-                period = -1;
-            }
-            catch (OperationCanceledException)
-            {
-                period = -1;
-            }
-            catch (Exception e) when (e is KeyNotFoundException || e is FormatException)
-            {
-                Log.Error($"Period estimation failed. {e.Message}");
-                Log.Error("Fatal error. Aborting execution.");
-                period = -1;
+                catch (TimeoutException e)
+                {
+                    Log.Error($"Period estimation failed. {e.Message} Aborting execution.");
+                    period = -1;
+                }
+                catch (OperationCanceledException)
+                {
+                    period = -1;
+                }
+                catch (Exception e) when (e is KeyNotFoundException || e is FormatException)
+                {
+                    Log.Error($"Period estimation failed. {e.Message}");
+                    Log.Error("Fatal error. Aborting execution.");
+                    period = -1;
+                }
             }
 
             return period >= 1;
@@ -222,6 +230,9 @@ namespace QuantumAlgorithms.Jobs
                     throw new OperationCanceledException();
                 }
             }
+
+            PeriodEstimationDriver.QuantumSimulator?.Dispose();
+            PeriodEstimationDriver.QuantumSimulator = null;
 
             if (!connection.GetStateData(jobId).Data.TryGetValue("Result", out var result))
                 throw new KeyNotFoundException("Could not receive result from period estimation job.");

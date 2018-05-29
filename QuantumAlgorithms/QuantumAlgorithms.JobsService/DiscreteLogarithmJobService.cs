@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using Hangfire;
 using QuantumAlgorithms.Common;
 using QuantumAlgorithms.DataService;
@@ -36,9 +37,12 @@ namespace QuantumAlgorithms.JobsService
             }
             else
             {
-                entity.Status = Status.FinishedWithErrors;
+                if (entity.Status != Status.Canceled && !entity.Messages.Last().Message.Contains("canceled"))
+                    entity.Status = Status.FinishedWithErrors;
             }
-            entity.FinishTime = DateTime.Now;
+
+            if (entity.FinishTime == null)
+                entity.FinishTime = DateTime.Now;
 
             //_discreteLogarithmDataService.Update(entity);
             _discreteLogarithmDataService.SaveChanges();

@@ -17,9 +17,15 @@ function showSuccessAlert() {
     $("#success-alert").show();
 }
 
-function showInfoAlert() {
-    $("#info-alert").fadeTo(4000, 1000).slideUp(1000, function () {
-        $("#info-alert").slideUp(1000);
+function showInfoAlert1() {
+    $("#info-alert-1").fadeTo(4000, 1000).slideUp(1000, function () {
+        $("#info-alert-1").slideUp(1000);
+    });
+}
+
+function showInfoAlert2() {
+    $("#info-alert-2").fadeTo(4000, 1000).slideUp(1000, function () {
+        $("#info-alert-2").slideUp(1000);
     });
 }
 
@@ -95,6 +101,8 @@ function getStatus(url, page = 1, deepClone = false) {
 }
 
 function getStatusCore(url, data) {
+    $("#delete-button").hide();
+
     //console.log(data['status']);
 
     //console.log(data['messages']);
@@ -115,8 +123,8 @@ function getStatusCore(url, data) {
     //var style = document.createAttribute("style");
     //style.value = "display:none";
 
-    var locale = window.navigator.userLanguage || window.navigator.language;
-    moment.locale(locale);
+    //var locale = window.navigator.userLanguage || window.navigator.language;
+    moment.locale("lt");
 
     var update = false;
     for (var i = printedMessages.childElementCount; i < allMessages.length; ++i) {
@@ -164,7 +172,9 @@ function getStatusCore(url, data) {
 
     if (data["status"] === 0 || data["status"] === 1) {
         if (update) {
-            showInfoAlert();
+            showInfoAlert1();
+        } else {
+            showInfoAlert2();
         }
     } else {
         if (data["status"] === 4) {
@@ -172,6 +182,9 @@ function getStatusCore(url, data) {
         } else if (data["status"] === 2 || data["status"] === 3) {
             showSuccessAlert();
         }
+
+        $("#cancel-button").hide();
+        $("#delete-button").show();
 
         repeat = false;
 
@@ -203,7 +216,7 @@ function getStatusCore(url, data) {
                 var pDiv = document.createElement('div');
                 pDiv.setAttributeNode(row.cloneNode(true));
 
-                pDiv.innerHTML = "<div class='form-group' id='finishTime'>" +
+                pDiv.innerHTML = "<div class='form-group' id='factor-p'>" +
                     "<label class='col-md-5'>Factor (P):</label>" +
                     data['output']['p'] +
                     "</div>";
@@ -212,7 +225,7 @@ function getStatusCore(url, data) {
                 var qDiv = document.createElement('div');
                 qDiv.setAttributeNode(row.cloneNode(true));
 
-                qDiv.innerHTML = "<div class='form-group' id='finishTime'>" +
+                qDiv.innerHTML = "<div class='form-group' id='factor-q'>" +
                     "<label class='col-md-5'>Factor (Q):</label>" +
                     data['output']['q'] +
                     "</div>";
@@ -229,6 +242,8 @@ function getStatusCore(url, data) {
                     data['output']["discreteLogarithm"] +
                     "</div>";
                 newOutput.appendChild(dlDiv);
+
+                output.parentNode.replaceChild(newOutput, output);
             }
         }
     }
@@ -350,29 +365,53 @@ function getSolutions(url, meniuItem, deepClone = false) {
                         tdPos.setAttributeNode(colspanPos);
                         tr.appendChild(tdPos);
 
-                        var solutionValue, detailsLink;
+                        var solutionValue, inputValue, outputValue, detailsLink;
                         if (typeof data[i]["input"]["number"] === 'undefined') {
                             solutionValue = "Discrete logarithm";
+                            inputValue = "r: " + data[i]["input"]["result"] + " | g: " + data[i]["input"]["generator"] + " | N: " + data[i]["input"]["modulus"];
                             detailsLink = "/Solve/DiscreteLogarithm/" + data[i]["id"];
+
+                            if (meniuItem === 3)
+                                outputValue = data[i]["output"]["discreteLogarithm"];
                         } else {
                             solutionValue = "Integer factorization";
+                            inputValue = "N: " + data[i]["input"]["number"];
                             detailsLink = "/Solve/IntegerFactorization/" + data[i]["id"];
+
+                            if (meniuItem === 3)
+                                outputValue = data[i]["output"]["p"] + ", " + data[i]["output"]["q"];
                         }
 
                         var tdSolution = document.createElement('td');
                         var colspanSolution = document.createAttribute("colspan");
-                        colspanSolution.value = meniuItem > 2 ? 4 : 5;
+                        colspanSolution.value = meniuItem < 4 ? 3 : 2;
                         tdSolution.appendChild(document.createTextNode(solutionValue));
                         tdSolution.setAttributeNode(colspanSolution);
                         tr.appendChild(tdSolution);
 
-                        var tdStartTime = document.createElement('td');
-                        var colspanStartTime = document.createAttribute("colspan");
-                        colspanStartTime.value = meniuItem > 2 ? 4 : 5;
-                        var startTimeValue = moment(data[i]['startTime']).format("L") + " " + moment(data[i]['startTime']).format("LTS");
-                        tdStartTime.appendChild(document.createTextNode(startTimeValue));
-                        tdStartTime.setAttributeNode(colspanStartTime);
-                        tr.appendChild(tdStartTime);
+                        var tdInput = document.createElement('td');
+                        var colspanInput = document.createAttribute("colspan");
+                        colspanInput.value = meniuItem < 3 ? 4 : 3;
+                        tdInput.appendChild(document.createTextNode(inputValue));
+                        tdInput.setAttributeNode(colspanInput);
+                        tr.appendChild(tdInput);
+
+                        if (meniuItem === 3) {
+                            var tdOutput = document.createElement('td');
+                            var colspanOutput = document.createAttribute("colspan");
+                            colspanOutput.value = 2;
+                            tdOutput.appendChild(document.createTextNode(outputValue));
+                            tdOutput.setAttributeNode(colspanOutput);
+                            tr.appendChild(tdOutput);
+                        } else {
+                            var tdStartTime = document.createElement('td');
+                            var colspanStartTime = document.createAttribute("colspan");
+                            colspanStartTime.value = 3;
+                            var startTimeValue = moment(data[i]['startTime']).format("L") + " " + moment(data[i]['startTime']).format("LTS");
+                            tdStartTime.appendChild(document.createTextNode(startTimeValue));
+                            tdStartTime.setAttributeNode(colspanStartTime);
+                            tr.appendChild(tdStartTime);
+                            }
 
                         if (meniuItem > 2) {
                             var tdDuration = document.createElement('td');
@@ -417,8 +456,8 @@ function getSolutions(url, meniuItem, deepClone = false) {
 }
 
 function clockFunction() {
-    var locale = window.navigator.userLanguage || window.navigator.language;
-    moment.locale(locale);
+    //var locale = window.navigator.userLanguage || window.navigator.language;
+    moment.locale("lt");
     var update;
     (update = function () {
         document.getElementById("clock")
