@@ -19,11 +19,20 @@ namespace QuantumAlgorithms.Client.Controllers
             _quantumAlgorithmsHttpClient = quantumAlgorithmsHttpClient;
         }
 
-        public IActionResult Usage()
+        [HttpGet]
+        public async Task<IActionResult> Usage()
         {
-            return View();
+            try
+            {
+                return View(model: await _quantumAlgorithmsHttpClient.GetValidAccessToken());
+            }
+            catch (Exception)
+            {
+                return RedirectToAction("Logout", "Authentication");
+            }
         }
 
+        [HttpGet]
         public async Task<IActionResult> AccessToken()
         {
             try

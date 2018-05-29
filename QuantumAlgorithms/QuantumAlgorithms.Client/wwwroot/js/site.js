@@ -63,7 +63,7 @@ function getStatusAuth(url, page = 1, deepClone = false) {
             $.get(
                 url,
                 function (data) {
-                    getStatusCore(url, data);
+                    getStatusCore(url, data, true);
                 }
             );
         }
@@ -93,14 +93,18 @@ function getStatus(url, page = 1, deepClone = false) {
     $.get(
         url,
         function (data) {
-            getStatusCore(url, data);
+            getStatusCore(url, data, false);
         }
     );
 
     return repeat;
 }
 
-function getStatusCore(url, data) {
+function getStatusCore(url, data, isAuth) {
+    if (!isAuth) {
+        $("#cancel-button").hide();
+    }
+
     $("#delete-button").hide();
 
     //console.log(data['status']);
@@ -176,6 +180,12 @@ function getStatusCore(url, data) {
         } else {
             showInfoAlert2();
         }
+
+        if (data["status"] === 1) {
+            document.getElementById('statusString').innerHTML =
+                "<label class='col-md-5'>Status:</label>" + data['statusString'];
+        }
+
     } else {
         if (data["status"] === 4) {
             showDangerAlert();
@@ -183,9 +193,10 @@ function getStatusCore(url, data) {
             showSuccessAlert();
         }
 
-        $("#cancel-button").hide();
-        $("#delete-button").show();
-
+        if (isAuth) {
+            $("#cancel-button").hide();
+            $("#delete-button").show();
+        }
         repeat = false;
 
         var row = document.createAttribute("class");

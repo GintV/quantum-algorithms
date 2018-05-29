@@ -1,3 +1,13 @@
-﻿@{
+﻿@model string
+@{
     ViewData["Title"] = "API Usage";
 }
+
+<h2>API Usage</h2>
+
+
+<p><i>Swagger</i> endpoint for API usage can be found <a href="https://localhost:44362/swagger" >here</a>.</p>
+
+<p>Access token for API can be obtained <a href="/Api/AccessToken">here</a>.</p>
+
+<p>Current access token: <b>@Model</b></p>
